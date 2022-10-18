@@ -97,6 +97,12 @@ class _NavbarState extends State<Navbar> {
             icon: Icons.work,
             isSelected: widget.selectedPage == "workers",
           ),
+          Navitem(
+            title: "Accounts",
+            changeSelectedPage: (value) => widget.changeSelectedPage(value),
+            icon: Icons.work,
+            isSelected: widget.selectedPage == "accounts",
+          ),
           const Spacer(),
           const AnimatedButton(),
         ],

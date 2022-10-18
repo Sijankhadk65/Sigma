@@ -18,8 +18,6 @@ class _$WorkerSerializer implements StructuredSerializer<Worker> {
   Iterable<Object?> serialize(Serializers serializers, Worker object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
-      'id',
-      serializers.serialize(object.id, specifiedType: const FullType(String)),
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
       'address',
@@ -35,7 +33,14 @@ class _$WorkerSerializer implements StructuredSerializer<Worker> {
       serializers.serialize(object.total_services,
           specifiedType: const FullType(int)),
     ];
-
+    Object? value;
+    value = object.id;
+    if (value != null) {
+      result
+        ..add('id')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
@@ -52,7 +57,7 @@ class _$WorkerSerializer implements StructuredSerializer<Worker> {
       switch (key) {
         case 'id':
           result.id = serializers.deserialize(value,
-              specifiedType: const FullType(String))! as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'name':
           result.name = serializers.deserialize(value,
@@ -83,7 +88,7 @@ class _$WorkerSerializer implements StructuredSerializer<Worker> {
 
 class _$Worker extends Worker {
   @override
-  final String id;
+  final String? id;
   @override
   final String name;
   @override
@@ -99,14 +104,13 @@ class _$Worker extends Worker {
       (new WorkerBuilder()..update(updates))._build();
 
   _$Worker._(
-      {required this.id,
+      {this.id,
       required this.name,
       required this.address,
       required this.ph_number,
       required this.total_income,
       required this.total_services})
       : super._() {
-    BuiltValueNullFieldError.checkNotNull(id, r'Worker', 'id');
     BuiltValueNullFieldError.checkNotNull(name, r'Worker', 'name');
     BuiltValueNullFieldError.checkNotNull(address, r'Worker', 'address');
     BuiltValueNullFieldError.checkNotNull(ph_number, r'Worker', 'ph_number');
@@ -219,7 +223,7 @@ class WorkerBuilder implements Builder<Worker, WorkerBuilder> {
   _$Worker _build() {
     final _$result = _$v ??
         new _$Worker._(
-            id: BuiltValueNullFieldError.checkNotNull(id, r'Worker', 'id'),
+            id: id,
             name:
                 BuiltValueNullFieldError.checkNotNull(name, r'Worker', 'name'),
             address: BuiltValueNullFieldError.checkNotNull(

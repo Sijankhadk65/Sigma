@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/account_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
 import 'package:sigma_app/src/bloc/worker_bloc.dart';
+import 'package:sigma_app/src/screen/accounts_screen.dart';
 import 'package:sigma_app/src/screen/add_ticket_screen.dart';
 import 'package:sigma_app/src/screen/dash_screen.dart';
 import 'package:sigma_app/src/screen/ticket_screen.dart';
@@ -71,6 +73,15 @@ class _HomeState extends State<Home> {
                             create: ((context) => WorkerBloc()),
                             child: const WorkerScreen(),
                             dispose: (context, WorkerBloc bloc) =>
+                                bloc.dispose(),
+                          ),
+                        ),
+                      if (_selectedPage == "accounts")
+                        MaterialPage(
+                          child: Provider(
+                            create: ((context) => AccountBloc()),
+                            child: const AccountsScreen(),
+                            dispose: (context, AccountBloc bloc) =>
                                 bloc.dispose(),
                           ),
                         ),

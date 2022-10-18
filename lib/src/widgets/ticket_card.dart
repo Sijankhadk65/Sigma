@@ -53,10 +53,6 @@ class TicketCard extends StatelessWidget {
               flex: 3,
               child: LayoutBuilder(builder: (context, constraints) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
                   width: constraints.maxWidth * 0.3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(
@@ -69,14 +65,33 @@ class TicketCard extends StatelessWidget {
                           : Colors.green,
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      ticket!.is_payment_due == 1 ? "Not Paid" : "Paid",
-                      style: GoogleFonts.nunito(
-                        fontWeight: FontWeight.bold,
-                        color: ticket!.is_payment_due == 1
-                            ? Colors.red
-                            : Colors.green,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                      onTap: () {
+                        if (ticket!.is_payment_due == 1) {
+                          _ticketBloc!.updateTicketPaidStatus(ticket!.id);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        child: Center(
+                          child: Text(
+                            ticket!.is_payment_due == 1 ? "Not Paid" : "Paid",
+                            style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                              color: ticket!.is_payment_due == 1
+                                  ? Colors.red
+                                  : Colors.green,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),

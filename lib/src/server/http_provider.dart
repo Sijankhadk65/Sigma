@@ -11,11 +11,14 @@ class HttpProvider {
 
   HttpProvider._(this._client);
 
+  final remoteHostName = "https://api.microchipexpert.com.np";
+  final localHostName = "http://localhost:8000";
+
   static final instance = HttpProvider._(HttpClient());
 
   Future<HttpClientResponse> fetchTickets() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/ticket"),
+      Uri.parse("$localHostName/ticket"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -25,7 +28,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/ticket/$id"),
+      Uri.parse("$localHostName/ticket/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -35,7 +38,7 @@ class HttpProvider {
     String? ticketID,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/issue/$ticketID"),
+      Uri.parse("$localHostName/issue/$ticketID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -63,7 +66,7 @@ class HttpProvider {
     )}";
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("http://localhost:8000/ticket/create?$param"),
+      Uri.parse("$localHostName/ticket/create?$param"),
     );
 
     HttpClientResponse _response = await _request.close();
@@ -80,7 +83,7 @@ class HttpProvider {
       ),
     )}";
     HttpClientRequest _request = await _client.putUrl(
-      Uri.parse("http://localhost:8000/ticket/update/$ticketID?$param"),
+      Uri.parse("$localHostName/ticket/update/$ticketID?$param"),
     );
 
     HttpClientResponse _response = await _request.close();
@@ -89,7 +92,7 @@ class HttpProvider {
 
   Future deleteTicket(String ticketID) async {
     HttpClientRequest _request = await _client.deleteUrl(
-      Uri.parse("http://localhost:8000/ticket/delete/$ticketID"),
+      Uri.parse("$localHostName/ticket/delete/$ticketID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -99,7 +102,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/customer/$id"),
+      Uri.parse("$localHostName/customer/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -109,7 +112,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/worker/$id"),
+      Uri.parse("$localHostName/worker/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -117,7 +120,15 @@ class HttpProvider {
 
   Future<HttpClientResponse> fetchWorkers() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("http://localhost:8000/worker"),
+      Uri.parse("$localHostName/worker"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchTransactions() async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$localHostName/accounting/transaction"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/issue.dart';
 import 'package:sigma_app/src/models/ticket.dart';
+import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/models/worker.dart';
 import 'package:sigma_app/src/server/http_provider.dart';
 
@@ -146,6 +147,22 @@ class Repository {
           List<Worker> sinkData = [];
           for (var worker in workers) {
             sinkData.add(Worker.parseJsonToWorker(worker));
+          }
+          sink.add(sinkData);
+        },
+      ),
+    );
+  }
+
+  Stream<List<Transaction>> fetchTransactions() async* {
+    final response = await _provider.fetchTransactions();
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, List<Transaction>>.fromHandlers(
+        handleData: (data, sink) {
+          final List<dynamic> expenses = jsonDecode(data)['data']['original'];
+          List<Transaction> sinkData = [];
+          for (var expense in expenses) {
+            sinkData.add(Transaction.parseJsonToTransaction(expense));
           }
           sink.add(sinkData);
         },

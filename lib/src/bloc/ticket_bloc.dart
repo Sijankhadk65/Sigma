@@ -151,6 +151,14 @@ class TicketBloc {
     );
   }
 
+  void updateTicketPaidStatus(String? ticketID) {
+    _updateTicket({
+      "param": {
+        "is_payment_due": 0,
+      }
+    }, ticketID);
+  }
+
   void _updateTicket(Map<String, dynamic> updateParams, String? ticketID) {
     _repo.updateTicket(updateParams, ticketID!).listen((ticket) {
       changeTicket(ticket);

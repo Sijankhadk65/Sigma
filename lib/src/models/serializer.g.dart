@@ -10,6 +10,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Customer.serializer)
       ..add(Issue.serializer)
       ..add(Ticket.serializer)
+      ..add(Transaction.serializer)
       ..add(Worker.serializer))
     .build();
 
