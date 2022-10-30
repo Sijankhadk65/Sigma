@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/home.dart';
+import 'package:sigma_app/src/root.dart';
+import 'package:sigma_app/src/screen/login_screen.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -25,7 +29,7 @@ class App extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const Home(title: 'Sigma'),
+      home: const Root(),
     );
   }
 }

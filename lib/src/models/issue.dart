@@ -22,8 +22,11 @@ abstract class Issue implements Built<Issue, IssueBuilder> {
         json,
       );
 
-  static String parseToJson(Issue? issue) => jsonSerializer.toJson(
-        serializer,
-        issue,
-      );
+  static Map<String, dynamic> parseToJson(Issue? issue) => {
+        "id": issue!.id,
+        "created_at": issue.created_at,
+        "ticket_id": issue.ticket_id,
+        "is_closed": issue.is_closed,
+        "description": issue.description,
+      };
 }

@@ -7,18 +7,13 @@ import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/issue.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
+import 'package:sigma_app/src/models/user.dart';
 import 'package:sigma_app/src/models/worker.dart';
 
 part 'serializer.g.dart';
 
 @SerializersFor(
-  [
-    Ticket,
-    Issue,
-    Customer,
-    Worker,
-    Transaction,
-  ],
+  [Ticket, Issue, Customer, Worker, Transaction, User],
 )
 final Serializers serializers = _$serializers;
 final jsonSerializer = (serializers.toBuilder()

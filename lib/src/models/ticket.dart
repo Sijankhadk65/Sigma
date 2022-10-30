@@ -16,7 +16,7 @@ abstract class Ticket implements Built<Ticket, TicketBuilder> {
   // Admin ID
   String get opened_by;
   // Center ID
-  int get center_id;
+  String get center_id;
   // Customer Name or ID
   String? get customer_id;
   // Ticket is open or close
@@ -53,8 +53,24 @@ abstract class Ticket implements Built<Ticket, TicketBuilder> {
         json,
       );
 
-  static String parseToJson(Ticket? ticket) => jsonSerializer.toJson(
-        serializer,
-        ticket,
-      );
+  static Map<String, dynamic> parseToJson(Ticket? ticket) => {
+        "id": ticket!.id,
+        "device_manufacturer": ticket.device_manufacturer,
+        "device_model": ticket.device_model,
+        "opened_by": ticket.opened_by,
+        "center_id": ticket.center_id,
+        "customer_id": ticket.customer_id,
+        "is_closed": ticket.is_closed,
+        "is_payment_due": ticket.is_payment_due,
+        "serviced_by": ticket.serviced_by,
+        "closed_at": ticket.closed_at,
+        "opened_at": ticket.opened_at,
+        "closed_by": ticket.closed_by,
+        "total_service_cost": ticket.total_service_cost,
+        "issue_count": ticket.issue_count,
+        "open_issue": ticket.open_issue,
+        "closed_issue": ticket.closed_issue,
+        "pay_recieved_by": ticket.pay_recieved_by,
+        "paid_at": ticket.paid_at,
+      };
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TicketInputField extends StatelessWidget {
-  const TicketInputField({
+class InputField extends StatelessWidget {
+  const InputField({
     Key? key,
     required this.onChanged,
     required this.fieldHint,

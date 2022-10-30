@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/worker.dart';
@@ -173,9 +174,12 @@ class TicketBloc {
         ..address = _customerAddressSubject.value
         ..ph_number = int.parse(_customerPhoneSubject.value),
     );
+
+    final userID = LoginBloc.instance.loggedUser!.id;
+
     final newTicket = Ticket(
       (t) => t
-        ..center_id = 1
+        ..center_id = "01"
         ..closed_at = null
         ..closed_by = null
         ..customer_id = null
@@ -187,7 +191,7 @@ class TicketBloc {
         ..issue_count = _ticketIssuesSubject.value.length
         ..open_issue = _ticketIssuesSubject.value.length
         ..opened_at = _openedDateSubject.value.toString()
-        ..opened_by = "002esrrr"
+        ..opened_by = userID
         ..serviced_by = null
         ..device_manufacturer = _deviceManufacturerSubject.value
         ..device_model = _deviceModelSubject.value

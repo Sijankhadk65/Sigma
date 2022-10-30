@@ -11,6 +11,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Issue.serializer)
       ..add(Ticket.serializer)
       ..add(Transaction.serializer)
+      ..add(User.serializer)
       ..add(Worker.serializer))
     .build();
 

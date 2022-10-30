@@ -6,6 +6,7 @@ import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/issue.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
+import 'package:sigma_app/src/models/user.dart';
 import 'package:sigma_app/src/models/worker.dart';
 import 'package:sigma_app/src/server/http_provider.dart';
 
@@ -165,6 +166,24 @@ class Repository {
             sinkData.add(Transaction.parseJsonToTransaction(expense));
           }
           sink.add(sinkData);
+        },
+      ),
+    );
+  }
+
+  Stream<User> login(String username, String password) async* {
+    final response = await _provider.login(username, password);
+    // print(response.headers);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, User>.fromHandlers(
+        handleData: (data, sink) {
+          // print(User.parseJsonToUser(jsonDecode(data)['data']['original']));
+          if (jsonDecode(data)['data']['original'] != {}) {
+            final user = jsonDecode(data)['data']['original'];
+            sink.add(User.parseJsonToUser(user));
+          } else {
+            sink.addError(jsonDecode(data));
+          }
         },
       ),
     );

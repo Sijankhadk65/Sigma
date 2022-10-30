@@ -54,20 +54,28 @@ class HttpProvider {
     final _customer = Customer.parseCustomerToJson(customer);
 
     Map<String, dynamic> body = {
-      "ticket": _ticket,
-      "issues": _issues,
-      "customer": _customer,
+      "param": {
+        "ticket": _ticket,
+        "issues": _issues,
+        "customer": _customer,
+      }
     };
 
-    String param = "param=${Uri.encodeQueryComponent(
-      json.encode(
-        body,
-      ),
-    )}";
+    // String param = "param=${Uri.encodeQueryComponent(
+    //   json.encode(
+    //     body,
+    //   ),
+    // )}";
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/ticket/create?$param"),
+      Uri.parse("$localHostName/ticket/create"),
     );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+
+    print(json.encode(body));
 
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -130,6 +138,28 @@ class HttpProvider {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$localHostName/accounting/transaction"),
     );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> login(
+    String username,
+    String password,
+  ) async {
+    Map<String, dynamic> body = {
+      "username": username,
+      "password": password,
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/user/authenticate"),
+    );
+
+    _request.headers.contentType =
+        ContentType("application", "json", charset: "utf-8");
+    // _request.headers.contentLength = body.toString().length;s
+    _request.write(json.encode(body));
+    print(json.encode(body));
     HttpClientResponse _response = await _request.close();
     return _response;
   }

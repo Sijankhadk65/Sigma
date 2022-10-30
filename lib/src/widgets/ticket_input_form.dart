@@ -57,12 +57,12 @@ class _TicketInputFormState extends State<TicketInputForm> {
                     ),
                   ],
                 ),
-                TicketInputField(
+                InputField(
                   onChanged: widget._ticketBloc!.changeDeviceManufacturer,
                   fieldHint: "Lenovo",
                   fieldLabel: "Device Manufacturer",
                 ),
-                TicketInputField(
+                InputField(
                   onChanged: widget._ticketBloc!.changeDeviceModel,
                   fieldHint: "Li-300000",
                   fieldLabel: "Device Model",
@@ -97,17 +97,17 @@ class _TicketInputFormState extends State<TicketInputForm> {
                     ),
                   ],
                 ),
-                TicketInputField(
+                InputField(
                   onChanged: widget._ticketBloc!.changeCustomerName,
                   fieldHint: "John Doe",
                   fieldLabel: "Customer's Name",
                 ),
-                TicketInputField(
+                InputField(
                   onChanged: widget._ticketBloc!.changeCustomerPhone,
                   fieldHint: "98-XXX-XXXXX",
                   fieldLabel: "Customer's Number",
                 ),
-                TicketInputField(
+                InputField(
                   onChanged: widget._ticketBloc!.changeCustomerAddress,
                   fieldHint: "Sukkhanagar",
                   fieldLabel: "Customer's Address",

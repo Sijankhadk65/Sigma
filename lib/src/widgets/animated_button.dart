@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sigma_app/src/bloc/login_bloc.dart';
 
 class AnimatedButton extends StatefulWidget {
   const AnimatedButton({
@@ -12,6 +13,12 @@ class AnimatedButton extends StatefulWidget {
 
 class _AnimatedButtonState extends State<AnimatedButton> {
   bool isHover = false;
+  LoginBloc? _loginBloc;
+  @override
+  void initState() {
+    super.initState();
+    _loginBloc = LoginBloc.instance;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,9 @@ class _AnimatedButtonState extends State<AnimatedButton> {
             borderRadius: BorderRadius.circular(
               10,
             ),
-            onTap: () {},
+            onTap: () {
+              _loginBloc!.logout();
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 25,

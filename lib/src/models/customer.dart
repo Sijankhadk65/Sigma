@@ -17,6 +17,10 @@ abstract class Customer implements Built<Customer, CustomerBuilder> {
   static Customer parseJsonToCustomer(Map<String, dynamic> json) =>
       jsonSerializer.deserializeWith(Customer.serializer, json)!;
 
-  static String parseCustomerToJson(Customer customer) =>
-      jsonSerializer.toJson(Customer.serializer, customer);
+  static Map<String, dynamic> parseCustomerToJson(Customer customer) => {
+        "id": customer.id,
+        "name": customer.name,
+        "address": customer.address,
+        "ph_number": customer.ph_number,
+      };
 }

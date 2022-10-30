@@ -34,9 +34,10 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   Widget build(BuildContext context) {
     _ticketBloc!.getTicket(widget.ticketID!);
     _ticketBloc!.getTicketIssues(widget.ticketID!);
-    _workerBloc!.getWorkers();
     if (widget.workerID != null) {
       _ticketBloc!.getTicketWorker(widget.workerID!);
+    } else {
+      _workerBloc!.getWorkers();
     }
     return Scaffold(
       appBar: AppBar(),

@@ -29,7 +29,7 @@ class _$TicketSerializer implements StructuredSerializer<Ticket> {
           specifiedType: const FullType(String)),
       'center_id',
       serializers.serialize(object.center_id,
-          specifiedType: const FullType(int)),
+          specifiedType: const FullType(String)),
       'is_closed',
       serializers.serialize(object.is_closed,
           specifiedType: const FullType(int)),
@@ -137,7 +137,7 @@ class _$TicketSerializer implements StructuredSerializer<Ticket> {
           break;
         case 'center_id':
           result.center_id = serializers.deserialize(value,
-              specifiedType: const FullType(int))! as int;
+              specifiedType: const FullType(String))! as String;
           break;
         case 'customer_id':
           result.customer_id = serializers.deserialize(value,
@@ -208,7 +208,7 @@ class _$Ticket extends Ticket {
   @override
   final String opened_by;
   @override
-  final int center_id;
+  final String center_id;
   @override
   final String? customer_id;
   @override
@@ -397,9 +397,9 @@ class TicketBuilder implements Builder<Ticket, TicketBuilder> {
   String? get opened_by => _$this._opened_by;
   set opened_by(String? opened_by) => _$this._opened_by = opened_by;
 
-  int? _center_id;
-  int? get center_id => _$this._center_id;
-  set center_id(int? center_id) => _$this._center_id = center_id;
+  String? _center_id;
+  String? get center_id => _$this._center_id;
+  set center_id(String? center_id) => _$this._center_id = center_id;
 
   String? _customer_id;
   String? get customer_id => _$this._customer_id;
