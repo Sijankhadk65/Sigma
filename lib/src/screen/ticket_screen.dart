@@ -101,6 +101,20 @@ class _TicketScreenState extends State<TicketScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Close",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Bill",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ),
               const Divider(),

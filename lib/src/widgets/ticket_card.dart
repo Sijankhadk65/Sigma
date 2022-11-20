@@ -211,7 +211,25 @@ class TicketCard extends StatelessWidget {
                   ),
                 ],
               ),
-            )
+            ),
+            Expanded(
+              flex: 3,
+              child: ElevatedButton(
+                onPressed: ticket!.is_payment_due == 0
+                    ? () {
+                        _ticketBloc!.updateTicketOpenStatus(ticket!.id!);
+                      }
+                    : null,
+                child: const Text("close"),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: ElevatedButton(
+                onPressed: ticket!.is_payment_due == 0 ? () {} : null,
+                child: const Text("Bill"),
+              ),
+            ),
           ],
         ),
         const Divider(),

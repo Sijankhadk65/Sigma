@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/worker.dart';
 import 'package:sigma_app/src/server/repository.dart';
 
@@ -15,7 +16,8 @@ class WorkerBloc {
   }
 
   void getWorkers() {
-    _repo.fetchWorkers().listen((workers) {
+    final center_id = LoginBloc.instance.loggedUser!.center_id;
+    _repo.fetchWorkers(center_id).listen((workers) {
       changeWorkers(workers);
     });
   }

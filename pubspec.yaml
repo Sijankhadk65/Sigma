@@ -41,6 +41,7 @@ dependencies:
   rxdart: ^0.27.5
   provider: ^6.0.3
   web_date_picker: ^1.0.0+3
+  printing: ^5.9.3
 
 dev_dependencies:
   flutter_test:
