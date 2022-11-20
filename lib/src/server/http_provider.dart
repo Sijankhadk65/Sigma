@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:sigma_app/src/models/customer.dart';
+import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 
 import '../models/issue.dart';
@@ -44,6 +45,43 @@ class HttpProvider {
     return _response;
   }
 
+  Future<HttpClientResponse> fetchExpenses(
+    String? ticketID,
+  ) async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$localHostName/expense/$ticketID"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postExpense(Expense expense) async {
+    Map<String, dynamic> body = {
+      "param": {
+        "expense": Expense.parseExpenseToJson(expense),
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/expense/create"),
+    );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future deleteExpense(String expenseID) async {
+    HttpClientRequest _request = await _client.deleteUrl(
+      Uri.parse("$localHostName/expense/delete/$expenseID"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
   Future<HttpClientResponse> postTicket(
     Ticket? ticket,
     List<Issue?> issues,
@@ -61,12 +99,6 @@ class HttpProvider {
       }
     };
 
-    // String param = "param=${Uri.encodeQueryComponent(
-    //   json.encode(
-    //     body,
-    //   ),
-    // )}";
-
     HttpClientRequest _request = await _client.postUrl(
       Uri.parse("$localHostName/ticket/create"),
     );
@@ -74,8 +106,6 @@ class HttpProvider {
     _request.headers.contentType =
         ContentType('application', 'json', charset: 'utf-8');
     _request.write(json.encode(body));
-
-    print(json.encode(body));
 
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -85,14 +115,14 @@ class HttpProvider {
     Map<String, dynamic> updateParams,
     String ticketID,
   ) async {
-    String param = "param=${Uri.encodeQueryComponent(
-      json.encode(
-        updateParams['param'],
-      ),
-    )}";
+    Map<String, dynamic> body = updateParams;
     HttpClientRequest _request = await _client.putUrl(
-      Uri.parse("$localHostName/ticket/update/$ticketID?$param"),
+      Uri.parse("$localHostName/ticket/update/$ticketID"),
     );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
 
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -111,6 +141,16 @@ class HttpProvider {
   ) async {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$localHostName/customer/$id"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchCenterWorker(
+    String? center_id,
+  ) async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$localHostName/worker/center/$center_id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;

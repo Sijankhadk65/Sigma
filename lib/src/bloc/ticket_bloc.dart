@@ -1,6 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
+import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/worker.dart';
 import 'package:sigma_app/src/server/repository.dart';
@@ -84,6 +85,25 @@ class TicketBloc {
   Function(List<Issue?>) get changeTicketIssues =>
       _ticketIssuesSubject.sink.add;
 
+  //Expense
+  final BehaviorSubject<List<Expense?>> _ticketExpensesSubject =
+      BehaviorSubject<List<Expense?>>();
+  Stream<List<Expense?>> get ticketExpenses => _ticketExpensesSubject.stream;
+  Function(List<Expense?>) get changeTicketExpenses =>
+      _ticketExpensesSubject.sink.add;
+
+  final BehaviorSubject<String> _expenseItemNameSubject =
+      BehaviorSubject<String>();
+  Stream<String> get expenseItemName => _expenseItemNameSubject.stream;
+  Function(String) get changeExpenseItemName =>
+      _expenseItemNameSubject.sink.add;
+
+  final BehaviorSubject<String> _expenseItemCostSubject =
+      BehaviorSubject<String>();
+  Stream<String> get expenseItemCost => _expenseItemCostSubject.stream;
+  Function(String) get changeExpenseItemCost =>
+      _expenseItemCostSubject.sink.add;
+
   // Worker
   final BehaviorSubject<Worker?> _ticketWorkerSubject =
       BehaviorSubject<Worker?>();
@@ -135,9 +155,40 @@ class TicketBloc {
     });
   }
 
+  void getTicketExpenses(String ticketID) {
+    _repo.fetchExpenses(ticketID).listen((expenses) {
+      changeTicketExpenses(expenses);
+    });
+  }
+
   void getTicketWorker(String id) {
     _repo.fetchWorker(id).listen((worker) {
       changeTicketWorker(worker);
+    });
+  }
+
+  void addExpenseToTicket(String ticketID) {
+    final userID = LoginBloc.instance.loggedUser!.id;
+    final newExpense = Expense(
+      (e) => e
+        ..ticket_id = ticketID
+        ..cost = double.parse(_expenseItemCostSubject.value)
+        ..item_name = _expenseItemNameSubject.value
+        ..created_by = userID
+        ..created_at = DateTime.now().toString(),
+    );
+    _repo.postExpense(newExpense).listen((expense) {
+      getTicketExpenses(ticketID);
+    });
+  }
+
+  void deleteExpense(String expenseID, String ticketID) {
+    _repo.deleteExpense(expenseID).listen((response) {
+      if (response['status'] == 1) {
+        getTicketExpenses(ticketID);
+      } else {
+        print("Delete not successful");
+      }
     });
   }
 
@@ -152,10 +203,27 @@ class TicketBloc {
     );
   }
 
+  void updateTicketOpenStatus(String? ticketID) {
+    final userID = LoginBloc.instance.loggedUser!.id;
+    _updateTicket(
+      {
+        "param": {
+          "is_closed": 1,
+          "closed_by": userID,
+          "closed_at": DateTime.now().toString(),
+        }
+      },
+      ticketID,
+    );
+  }
+
   void updateTicketPaidStatus(String? ticketID) {
+    final userID = LoginBloc.instance.loggedUser!.id;
+
     _updateTicket({
       "param": {
         "is_payment_due": 0,
+        "pay_recieved_by": userID,
       }
     }, ticketID);
   }
@@ -164,6 +232,7 @@ class TicketBloc {
     _repo.updateTicket(updateParams, ticketID!).listen((ticket) {
       changeTicket(ticket);
     });
+    getTickets();
   }
 
   void saveTicket() {

@@ -8,6 +8,7 @@ part of serializers;
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Customer.serializer)
+      ..add(Expense.serializer)
       ..add(Issue.serializer)
       ..add(Ticket.serializer)
       ..add(Transaction.serializer)

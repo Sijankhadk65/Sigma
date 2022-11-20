@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
 import 'package:sigma_app/src/bloc/worker_bloc.dart';
+import 'package:sigma_app/src/models/customer.dart';
+import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/worker.dart';
@@ -34,6 +36,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   Widget build(BuildContext context) {
     _ticketBloc!.getTicket(widget.ticketID!);
     _ticketBloc!.getTicketIssues(widget.ticketID!);
+    _ticketBloc!.getTicketExpenses(widget.ticketID!);
     if (widget.workerID != null) {
       _ticketBloc!.getTicketWorker(widget.workerID!);
     } else {
@@ -54,7 +57,37 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
               case ConnectionState.active:
                 return Column(
                   children: [
-                    Text("${snapshot.data}"),
+                    StreamBuilder<Customer?>(
+                      stream: _ticketBloc!
+                          .getTicketCustomer(snapshot.data!.customer_id!),
+                      builder: ((context, customerSnapshot) {
+                        if (customerSnapshot.hasError) {
+                          return Text(customerSnapshot.error.toString());
+                        }
+                        switch (customerSnapshot.connectionState) {
+                          case ConnectionState.none:
+                            return const Text("Awaiting Bids....");
+                          case ConnectionState.waiting:
+                            return const Text("Waiting....");
+                          case ConnectionState.active:
+                            return const Text("Connection Active");
+                          case ConnectionState.done:
+                            return Column(
+                              children: [
+                                Text(
+                                  customerSnapshot.data!.name,
+                                ),
+                                Text(
+                                  customerSnapshot.data!.address,
+                                ),
+                                Text(
+                                  customerSnapshot.data!.ph_number.toString(),
+                                ),
+                              ],
+                            );
+                        }
+                      }),
+                    ),
                     StreamBuilder<List<Issue?>>(
                       stream: _ticketBloc!.ticketIssues,
                       builder: (context, issueSnapshot) {
@@ -67,13 +100,17 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                           case ConnectionState.waiting:
                             return const Text("Waiting....");
                           case ConnectionState.active:
-                            return Text("${issueSnapshot.data}");
-                          case ConnectionState.done:
                             return issueSnapshot.hasData
-                                ? Text(
-                                    issueSnapshot.data.toString(),
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: issueSnapshot.data!.length,
+                                    itemBuilder: ((context, index) => Text(
+                                        issueSnapshot
+                                            .data![index]!.description)),
                                   )
                                 : const Text("No Data");
+                          case ConnectionState.done:
+                            return const Text("Connection Done");
                         }
                       },
                     ),
@@ -116,21 +153,28 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                                       workersSnapshot.data![0]!);
                                   return Row(
                                     children: [
-                                      DropdownButton<Worker>(
-                                        items: workersSnapshot.data!
-                                            .map<DropdownMenuItem<Worker>>(
-                                              (e) => DropdownMenuItem(
-                                                child: Text(
-                                                  e!.name,
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged: (value) {
-                                          _ticketBloc!
-                                              .changeTicketWorker(value!);
-                                        },
-                                      ),
+                                      StreamBuilder<Worker?>(
+                                          stream: _ticketBloc!.ticketWorker,
+                                          builder: (context, snapshot) {
+                                            return DropdownButton<Worker>(
+                                              value: snapshot.data,
+                                              items: workersSnapshot.data!
+                                                  .map<
+                                                      DropdownMenuItem<Worker>>(
+                                                    (e) => DropdownMenuItem(
+                                                      value: e,
+                                                      child: Text(
+                                                        e!.name,
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                _ticketBloc!
+                                                    .changeTicketWorker(value!);
+                                              },
+                                            );
+                                          }),
                                       ElevatedButton(
                                         onPressed: () {
                                           _ticketBloc!.updateTicketWorker(
@@ -148,6 +192,88 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                               }
                             }),
                           ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: _ticketBloc!.changeExpenseItemName,
+                              decoration: const InputDecoration(
+                                hintText: "itemname",
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: TextField(
+                              onChanged: _ticketBloc!.changeExpenseItemCost,
+                              decoration: const InputDecoration(
+                                hintText: "Cost",
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              _ticketBloc!.addExpenseToTicket(widget.ticketID!);
+                            },
+                            child: const Text("Add Expense"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child: StreamBuilder<List<Expense?>>(
+                      stream: _ticketBloc!.ticketExpenses,
+                      builder: (context, expensesSnapshot) {
+                        if (expensesSnapshot.hasError) {
+                          return Text(expensesSnapshot.error.toString());
+                        }
+                        switch (expensesSnapshot.connectionState) {
+                          case ConnectionState.none:
+                            return const Text("Awaiting Bids...");
+                          case ConnectionState.waiting:
+                            return const CircularProgressIndicator();
+                          case ConnectionState.active:
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: expensesSnapshot.data!.length,
+                              itemBuilder: (context, index) => Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      "${index + 1}",
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      expensesSnapshot.data![index]!.item_name,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      "${expensesSnapshot.data![index]!.cost}",
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      _ticketBloc!.deleteExpense(
+                                          expensesSnapshot.data![index]!.id!,
+                                          widget.ticketID!);
+                                    },
+                                    icon: const Icon(
+                                      Icons.remove,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          case ConnectionState.done:
+                            return const Text("Connection done");
+                        }
+                      },
+                    ))
                   ],
                 );
               case ConnectionState.done:
