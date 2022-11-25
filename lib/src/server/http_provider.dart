@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/ticket.dart';
+import 'package:sigma_app/src/models/transaction.dart';
 
 import '../models/issue.dart';
 
@@ -170,6 +171,26 @@ class HttpProvider {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$localHostName/worker"),
     );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postTransaction(
+      Transaction ticketTransaction) async {
+    Map<String, dynamic> body = {
+      "param": {
+        "transaction": Transaction.parseTransactionToJson(ticketTransaction),
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/accounting/transaction/create"),
+    );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }

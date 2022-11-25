@@ -13,6 +13,8 @@ abstract class Transaction implements Built<Transaction, TransactionBuilder> {
   String get source;
   String get description;
   double get amount;
+  String get center_id;
+  String get payment_method;
 
   Transaction._();
 
@@ -23,4 +25,17 @@ abstract class Transaction implements Built<Transaction, TransactionBuilder> {
 
   static Transaction parseJsonToTransaction(Map<String, dynamic> json) =>
       jsonSerializer.deserializeWith(Transaction.serializer, json)!;
+
+  static Map<String, dynamic> parseTransactionToJson(Transaction transaction) =>
+      {
+        "created_at": transaction.created_at,
+        "created_by": transaction.created_by,
+        "transaction_at": transaction.transaction_at,
+        "type": transaction.type,
+        "source": transaction.source,
+        "description": transaction.description,
+        "center_id": transaction.center_id,
+        "amount": transaction.amount,
+        "payment_method": transaction.payment_method,
+      };
 }

@@ -3,6 +3,7 @@ import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/ticket.dart';
+import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/models/worker.dart';
 import 'package:sigma_app/src/server/repository.dart';
 
@@ -233,6 +234,23 @@ class TicketBloc {
       changeTicket(ticket);
     });
     getTickets();
+  }
+
+  void createTicketTransaction(Ticket ticket) {
+    final userID = LoginBloc.instance.loggedUser!.id;
+    final ticketTransaction = Transaction(
+      (t) => t
+        ..amount = 100.00
+        ..center_id = "01"
+        ..created_at = DateTime.now().toString()
+        ..created_by = userID
+        ..description = ticket.id
+        ..source = "service"
+        ..type = "credit"
+        ..transaction_at = DateTime.now().toString()
+        ..payment_method = "cash",
+    );
+    _repo.postTransaction(ticketTransaction).listen((event) {});
   }
 
   void saveTicket() {

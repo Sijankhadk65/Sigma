@@ -38,6 +38,12 @@ class _$TransactionSerializer implements StructuredSerializer<Transaction> {
       'amount',
       serializers.serialize(object.amount,
           specifiedType: const FullType(double)),
+      'center_id',
+      serializers.serialize(object.center_id,
+          specifiedType: const FullType(String)),
+      'payment_method',
+      serializers.serialize(object.payment_method,
+          specifiedType: const FullType(String)),
     ];
     Object? value;
     value = object.id;
@@ -93,6 +99,14 @@ class _$TransactionSerializer implements StructuredSerializer<Transaction> {
           result.amount = serializers.deserialize(value,
               specifiedType: const FullType(double))! as double;
           break;
+        case 'center_id':
+          result.center_id = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'payment_method':
+          result.payment_method = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
       }
     }
 
@@ -117,6 +131,10 @@ class _$Transaction extends Transaction {
   final String description;
   @override
   final double amount;
+  @override
+  final String center_id;
+  @override
+  final String payment_method;
 
   factory _$Transaction([void Function(TransactionBuilder)? updates]) =>
       (new TransactionBuilder()..update(updates))._build();
@@ -129,7 +147,9 @@ class _$Transaction extends Transaction {
       required this.type,
       required this.source,
       required this.description,
-      required this.amount})
+      required this.amount,
+      required this.center_id,
+      required this.payment_method})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         created_at, r'Transaction', 'created_at');
@@ -142,6 +162,10 @@ class _$Transaction extends Transaction {
     BuiltValueNullFieldError.checkNotNull(
         description, r'Transaction', 'description');
     BuiltValueNullFieldError.checkNotNull(amount, r'Transaction', 'amount');
+    BuiltValueNullFieldError.checkNotNull(
+        center_id, r'Transaction', 'center_id');
+    BuiltValueNullFieldError.checkNotNull(
+        payment_method, r'Transaction', 'payment_method');
   }
 
   @override
@@ -162,7 +186,9 @@ class _$Transaction extends Transaction {
         type == other.type &&
         source == other.source &&
         description == other.description &&
-        amount == other.amount;
+        amount == other.amount &&
+        center_id == other.center_id &&
+        payment_method == other.payment_method;
   }
 
   @override
@@ -172,13 +198,19 @@ class _$Transaction extends Transaction {
             $jc(
                 $jc(
                     $jc(
-                        $jc($jc($jc(0, id.hashCode), created_at.hashCode),
-                            created_by.hashCode),
-                        transaction_at.hashCode),
-                    type.hashCode),
-                source.hashCode),
-            description.hashCode),
-        amount.hashCode));
+                        $jc(
+                            $jc(
+                                $jc(
+                                    $jc($jc(0, id.hashCode),
+                                        created_at.hashCode),
+                                    created_by.hashCode),
+                                transaction_at.hashCode),
+                            type.hashCode),
+                        source.hashCode),
+                    description.hashCode),
+                amount.hashCode),
+            center_id.hashCode),
+        payment_method.hashCode));
   }
 
   @override
@@ -191,7 +223,9 @@ class _$Transaction extends Transaction {
           ..add('type', type)
           ..add('source', source)
           ..add('description', description)
-          ..add('amount', amount))
+          ..add('amount', amount)
+          ..add('center_id', center_id)
+          ..add('payment_method', payment_method))
         .toString();
   }
 }
@@ -232,6 +266,15 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
   double? get amount => _$this._amount;
   set amount(double? amount) => _$this._amount = amount;
 
+  String? _center_id;
+  String? get center_id => _$this._center_id;
+  set center_id(String? center_id) => _$this._center_id = center_id;
+
+  String? _payment_method;
+  String? get payment_method => _$this._payment_method;
+  set payment_method(String? payment_method) =>
+      _$this._payment_method = payment_method;
+
   TransactionBuilder();
 
   TransactionBuilder get _$this {
@@ -245,6 +288,8 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
       _source = $v.source;
       _description = $v.description;
       _amount = $v.amount;
+      _center_id = $v.center_id;
+      _payment_method = $v.payment_method;
       _$v = null;
     }
     return this;
@@ -281,7 +326,11 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
             description: BuiltValueNullFieldError.checkNotNull(
                 description, r'Transaction', 'description'),
             amount: BuiltValueNullFieldError.checkNotNull(
-                amount, r'Transaction', 'amount'));
+                amount, r'Transaction', 'amount'),
+            center_id: BuiltValueNullFieldError.checkNotNull(
+                center_id, r'Transaction', 'center_id'),
+            payment_method: BuiltValueNullFieldError.checkNotNull(
+                payment_method, r'Transaction', 'payment_method'));
     replace(_$result);
     return _$result;
   }

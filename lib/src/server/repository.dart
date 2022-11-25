@@ -201,6 +201,21 @@ class Repository {
     );
   }
 
+  Stream<Transaction> postTransaction(Transaction ticketTransaction) async* {
+    final response = await _provider.postTransaction(
+      ticketTransaction,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, Transaction>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> newTransaction =
+            jsonDecode(data)['data']['original'];
+        sink.add(Transaction.parseJsonToTransaction(newTransaction));
+      },
+    ));
+  }
+
   Stream<List<Transaction>> fetchTransactions() async* {
     final response = await _provider.fetchTransactions();
     yield* utf8.decoder.bind(response).transform(
