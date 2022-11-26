@@ -31,9 +31,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: Column(
         children: [
           Expanded(
@@ -49,7 +46,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Expanded(
-                  flex: 4,
+                  flex: 5,
                   child: Navigator(
                     pages: [
                       if (_selectedPage == "dashboard")

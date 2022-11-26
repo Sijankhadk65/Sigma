@@ -43,6 +43,9 @@ class _$UserSerializer implements StructuredSerializer<User> {
       'contact_no',
       serializers.serialize(object.contact_no,
           specifiedType: const FullType(int)),
+      'photo_uri',
+      serializers.serialize(object.photo_uri,
+          specifiedType: const FullType(String)),
     ];
     Object? value;
     value = object.password;
@@ -106,6 +109,10 @@ class _$UserSerializer implements StructuredSerializer<User> {
           result.contact_no = serializers.deserialize(value,
               specifiedType: const FullType(int))! as int;
           break;
+        case 'photo_uri':
+          result.photo_uri = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
       }
     }
 
@@ -134,6 +141,8 @@ class _$User extends User {
   final String email;
   @override
   final int contact_no;
+  @override
+  final String photo_uri;
 
   factory _$User([void Function(UserBuilder)? updates]) =>
       (new UserBuilder()..update(updates))._build();
@@ -148,7 +157,8 @@ class _$User extends User {
       required this.center_id,
       required this.address,
       required this.email,
-      required this.contact_no})
+      required this.contact_no,
+      required this.photo_uri})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'User', 'id');
     BuiltValueNullFieldError.checkNotNull(username, r'User', 'username');
@@ -159,6 +169,7 @@ class _$User extends User {
     BuiltValueNullFieldError.checkNotNull(address, r'User', 'address');
     BuiltValueNullFieldError.checkNotNull(email, r'User', 'email');
     BuiltValueNullFieldError.checkNotNull(contact_no, r'User', 'contact_no');
+    BuiltValueNullFieldError.checkNotNull(photo_uri, r'User', 'photo_uri');
   }
 
   @override
@@ -181,7 +192,8 @@ class _$User extends User {
         center_id == other.center_id &&
         address == other.address &&
         email == other.email &&
-        contact_no == other.contact_no;
+        contact_no == other.contact_no &&
+        photo_uri == other.photo_uri;
   }
 
   @override
@@ -193,15 +205,19 @@ class _$User extends User {
                     $jc(
                         $jc(
                             $jc(
-                                $jc($jc($jc(0, id.hashCode), username.hashCode),
-                                    password.hashCode),
-                                role.hashCode),
-                            fname.hashCode),
-                        lname.hashCode),
-                    center_id.hashCode),
-                address.hashCode),
-            email.hashCode),
-        contact_no.hashCode));
+                                $jc(
+                                    $jc(
+                                        $jc($jc(0, id.hashCode),
+                                            username.hashCode),
+                                        password.hashCode),
+                                    role.hashCode),
+                                fname.hashCode),
+                            lname.hashCode),
+                        center_id.hashCode),
+                    address.hashCode),
+                email.hashCode),
+            contact_no.hashCode),
+        photo_uri.hashCode));
   }
 
   @override
@@ -216,7 +232,8 @@ class _$User extends User {
           ..add('center_id', center_id)
           ..add('address', address)
           ..add('email', email)
-          ..add('contact_no', contact_no))
+          ..add('contact_no', contact_no)
+          ..add('photo_uri', photo_uri))
         .toString();
   }
 }
@@ -264,6 +281,10 @@ class UserBuilder implements Builder<User, UserBuilder> {
   int? get contact_no => _$this._contact_no;
   set contact_no(int? contact_no) => _$this._contact_no = contact_no;
 
+  String? _photo_uri;
+  String? get photo_uri => _$this._photo_uri;
+  set photo_uri(String? photo_uri) => _$this._photo_uri = photo_uri;
+
   UserBuilder();
 
   UserBuilder get _$this {
@@ -279,6 +300,7 @@ class UserBuilder implements Builder<User, UserBuilder> {
       _address = $v.address;
       _email = $v.email;
       _contact_no = $v.contact_no;
+      _photo_uri = $v.photo_uri;
       _$v = null;
     }
     return this;
@@ -317,7 +339,9 @@ class UserBuilder implements Builder<User, UserBuilder> {
             email:
                 BuiltValueNullFieldError.checkNotNull(email, r'User', 'email'),
             contact_no: BuiltValueNullFieldError.checkNotNull(
-                contact_no, r'User', 'contact_no'));
+                contact_no, r'User', 'contact_no'),
+            photo_uri: BuiltValueNullFieldError.checkNotNull(
+                photo_uri, r'User', 'photo_uri'));
     replace(_$result);
     return _$result;
   }

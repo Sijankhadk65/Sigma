@@ -30,9 +30,6 @@ class _NavbarState extends State<Navbar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(
-        bottom: 10,
-      ),
       decoration: const BoxDecoration(
         color: Colors.white,
       ),
@@ -44,47 +41,6 @@ class _NavbarState extends State<Navbar> {
                 ? Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        height: 100,
-                        width: 100,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "${snapshot.data!.fname} ${snapshot.data!.lname}",
-                        style: GoogleFonts.josefinSans(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(161, 18, 148, 65),
-                          borderRadius: BorderRadius.circular(
-                            15,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                          ),
-                          child: Text(
-                            "admin",
-                            style: GoogleFonts.playfairDisplay(
-                              color: Colors.white,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -130,7 +86,65 @@ class _NavbarState extends State<Navbar> {
                         isSelected: widget.selectedPage == "accounts",
                       ),
                       const Spacer(),
-                      const AnimatedButton(),
+                      // const AnimatedButton(),
+                      Container(
+                        color: Colors.blue,
+                        padding: const EdgeInsets.all(
+                          10,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    snapshot.data!.photo_uri,
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 10,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${snapshot.data!.fname} ${snapshot.data!.lname}",
+                                    style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${snapshot.data!.email}",
+                                    style: GoogleFonts.nunito(
+                                      color: Colors.white60,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Spacer(),
+                            IconButton(
+                              onPressed: () {
+                                _loginBloc!.logout();
+                              },
+                              icon: const Icon(
+                                Icons.logout,
+                                size: 15,
+                                color: Colors.white,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ],
                   )
                 : const Text("No data");

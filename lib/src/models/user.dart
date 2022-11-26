@@ -15,6 +15,7 @@ abstract class User implements Built<User, UserBuilder> {
   String get address;
   String get email;
   int get contact_no;
+  String get photo_uri;
 
   static Serializer<User> get serializer => _$userSerializer;
 
