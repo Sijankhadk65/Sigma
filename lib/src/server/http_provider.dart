@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
 
@@ -221,6 +222,34 @@ class HttpProvider {
     // _request.headers.contentLength = body.toString().length;s
     _request.write(json.encode(body));
     print(json.encode(body));
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchSales() async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$localHostName/inventory/sales/01"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postStockItem(StockItem newStockItem) async {
+    Map<String, dynamic> body = {
+      "param": {
+        "stockItem": StockItem.parseStockItemToJson(newStockItem),
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/inventory/stock/createItem"),
+    );
+
+    _request.headers.contentType =
+        ContentType("application", "json", charset: "utf-8");
+
+    _request.write(json.encode(body));
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }

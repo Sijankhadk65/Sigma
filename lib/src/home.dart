@@ -7,6 +7,8 @@ import 'package:sigma_app/src/bloc/worker_bloc.dart';
 import 'package:sigma_app/src/screen/accounts_screen.dart';
 import 'package:sigma_app/src/screen/add_ticket_screen.dart';
 import 'package:sigma_app/src/screen/dash_screen.dart';
+import 'package:sigma_app/src/screen/sales_screen.dart';
+import 'package:sigma_app/src/screen/stock_items_screen.dart';
 import 'package:sigma_app/src/screen/ticket_screen.dart';
 import 'package:sigma_app/src/screen/transactions_screen.dart';
 import 'package:sigma_app/src/screen/worker_screen.dart';
@@ -52,6 +54,14 @@ class _HomeState extends State<Home> {
                       if (_selectedPage == "dashboard")
                         const MaterialPage(
                           child: DashScreen(),
+                        ),
+                      if (_selectedPage == "sales")
+                        const MaterialPage(
+                          child: SalesScreen(),
+                        ),
+                      if (_selectedPage == "stock")
+                        const MaterialPage(
+                          child: StockItemsScreen(),
                         ),
                       if (_selectedPage == "tickets")
                         MaterialPage(

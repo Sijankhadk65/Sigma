@@ -52,6 +52,20 @@ class _NavbarState extends State<Navbar> {
                         isSelected: widget.selectedPage == "dashboard",
                       ),
                       Navitem(
+                        title: "Sales",
+                        changeSelectedPage: (value) =>
+                            widget.changeSelectedPage(value),
+                        icon: Icons.device_hub,
+                        isSelected: widget.selectedPage == "sales",
+                      ),
+                      Navitem(
+                        title: "Stock",
+                        changeSelectedPage: (value) =>
+                            widget.changeSelectedPage(value),
+                        icon: Icons.device_hub,
+                        isSelected: widget.selectedPage == "stock",
+                      ),
+                      Navitem(
                         title: "Tickets",
                         changeSelectedPage: (value) =>
                             widget.changeSelectedPage(value),

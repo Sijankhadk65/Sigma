@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
+import 'package:sigma_app/src/models/sales.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/models/user.dart';
@@ -248,5 +250,40 @@ class Repository {
         },
       ),
     );
+  }
+
+  Stream<List<Sales>> fetchSales() async* {
+    final response = await _provider.fetchSales();
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, List<Sales>>.fromHandlers(
+        handleData: (data, sink) {
+          final List<dynamic> sales = jsonDecode(data)['data']['original'];
+          List<Sales> sinkData = [];
+          for (var sale in sales) {
+            sinkData.add(Sales.parseJsonToSales(sale));
+          }
+          sink.add(sinkData);
+        },
+      ),
+    );
+  }
+
+  Stream<StockItem> postStockItem(StockItem stockItem) async* {
+    final response = await _provider.postStockItem(
+      stockItem,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, StockItem>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> newStockItem =
+            jsonDecode(data)['data']['original'];
+        sink.add(
+          StockItem.parseJsonToStockItem(
+            newStockItem,
+          ),
+        );
+      },
+    ));
   }
 }

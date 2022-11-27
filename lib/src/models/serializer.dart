@@ -6,6 +6,9 @@ import 'package:built_collection/built_collection.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
+import 'package:sigma_app/src/models/sales.dart';
+import 'package:sigma_app/src/models/sales_item.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/models/user.dart';
@@ -22,6 +25,9 @@ part 'serializer.g.dart';
     Transaction,
     User,
     Expense,
+    Sales,
+    SalesItem,
+    StockItem,
   ],
 )
 final Serializers serializers = _$serializers;
