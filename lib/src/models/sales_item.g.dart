@@ -42,15 +42,19 @@ class _$SalesItemSerializer implements StructuredSerializer<SalesItem> {
       'total',
       serializers.serialize(object.total,
           specifiedType: const FullType(double)),
-      'sales_id',
-      serializers.serialize(object.sales_id,
-          specifiedType: const FullType(String)),
     ];
     Object? value;
     value = object.id;
     if (value != null) {
       result
         ..add('id')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
+    value = object.sales_id;
+    if (value != null) {
+      result
+        ..add('sales_id')
         ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
@@ -106,7 +110,7 @@ class _$SalesItemSerializer implements StructuredSerializer<SalesItem> {
           break;
         case 'sales_id':
           result.sales_id = serializers.deserialize(value,
-              specifiedType: const FullType(String))! as String;
+              specifiedType: const FullType(String)) as String?;
           break;
       }
     }
@@ -135,7 +139,7 @@ class _$SalesItem extends SalesItem {
   @override
   final double total;
   @override
-  final String sales_id;
+  final String? sales_id;
 
   factory _$SalesItem([void Function(SalesItemBuilder)? updates]) =>
       (new SalesItemBuilder()..update(updates))._build();
@@ -150,7 +154,7 @@ class _$SalesItem extends SalesItem {
       required this.quantity,
       required this.unit_price,
       required this.total,
-      required this.sales_id})
+      this.sales_id})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(center_id, r'SalesItem', 'center_id');
     BuiltValueNullFieldError.checkNotNull(
@@ -163,7 +167,6 @@ class _$SalesItem extends SalesItem {
     BuiltValueNullFieldError.checkNotNull(
         unit_price, r'SalesItem', 'unit_price');
     BuiltValueNullFieldError.checkNotNull(total, r'SalesItem', 'total');
-    BuiltValueNullFieldError.checkNotNull(sales_id, r'SalesItem', 'sales_id');
   }
 
   @override
@@ -326,8 +329,7 @@ class SalesItemBuilder implements Builder<SalesItem, SalesItemBuilder> {
                 unit_price, r'SalesItem', 'unit_price'),
             total: BuiltValueNullFieldError.checkNotNull(
                 total, r'SalesItem', 'total'),
-            sales_id: BuiltValueNullFieldError.checkNotNull(
-                sales_id, r'SalesItem', 'sales_id'));
+            sales_id: sales_id);
     replace(_$result);
     return _$result;
   }

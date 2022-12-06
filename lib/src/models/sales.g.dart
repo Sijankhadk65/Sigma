@@ -33,6 +33,9 @@ class _$SalesSerializer implements StructuredSerializer<Sales> {
       'item_count',
       serializers.serialize(object.item_count,
           specifiedType: const FullType(int)),
+      'payment_method',
+      serializers.serialize(object.payment_method,
+          specifiedType: const FullType(String)),
     ];
     Object? value;
     value = object.id;
@@ -91,6 +94,10 @@ class _$SalesSerializer implements StructuredSerializer<Sales> {
           result.customer_id = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String?;
           break;
+        case 'payment_method':
+          result.payment_method = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
       }
     }
 
@@ -113,6 +120,8 @@ class _$Sales extends Sales {
   final int item_count;
   @override
   final String? customer_id;
+  @override
+  final String payment_method;
 
   factory _$Sales([void Function(SalesBuilder)? updates]) =>
       (new SalesBuilder()..update(updates))._build();
@@ -124,13 +133,16 @@ class _$Sales extends Sales {
       required this.created_by,
       required this.amount,
       required this.item_count,
-      this.customer_id})
+      this.customer_id,
+      required this.payment_method})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(center_id, r'Sales', 'center_id');
     BuiltValueNullFieldError.checkNotNull(created_at, r'Sales', 'created_at');
     BuiltValueNullFieldError.checkNotNull(created_by, r'Sales', 'created_by');
     BuiltValueNullFieldError.checkNotNull(amount, r'Sales', 'amount');
     BuiltValueNullFieldError.checkNotNull(item_count, r'Sales', 'item_count');
+    BuiltValueNullFieldError.checkNotNull(
+        payment_method, r'Sales', 'payment_method');
   }
 
   @override
@@ -150,7 +162,8 @@ class _$Sales extends Sales {
         created_by == other.created_by &&
         amount == other.amount &&
         item_count == other.item_count &&
-        customer_id == other.customer_id;
+        customer_id == other.customer_id &&
+        payment_method == other.payment_method;
   }
 
   @override
@@ -159,12 +172,14 @@ class _$Sales extends Sales {
         $jc(
             $jc(
                 $jc(
-                    $jc($jc($jc(0, id.hashCode), center_id.hashCode),
-                        created_at.hashCode),
-                    created_by.hashCode),
-                amount.hashCode),
-            item_count.hashCode),
-        customer_id.hashCode));
+                    $jc(
+                        $jc($jc($jc(0, id.hashCode), center_id.hashCode),
+                            created_at.hashCode),
+                        created_by.hashCode),
+                    amount.hashCode),
+                item_count.hashCode),
+            customer_id.hashCode),
+        payment_method.hashCode));
   }
 
   @override
@@ -176,7 +191,8 @@ class _$Sales extends Sales {
           ..add('created_by', created_by)
           ..add('amount', amount)
           ..add('item_count', item_count)
-          ..add('customer_id', customer_id))
+          ..add('customer_id', customer_id)
+          ..add('payment_method', payment_method))
         .toString();
   }
 }
@@ -212,6 +228,11 @@ class SalesBuilder implements Builder<Sales, SalesBuilder> {
   String? get customer_id => _$this._customer_id;
   set customer_id(String? customer_id) => _$this._customer_id = customer_id;
 
+  String? _payment_method;
+  String? get payment_method => _$this._payment_method;
+  set payment_method(String? payment_method) =>
+      _$this._payment_method = payment_method;
+
   SalesBuilder();
 
   SalesBuilder get _$this {
@@ -224,6 +245,7 @@ class SalesBuilder implements Builder<Sales, SalesBuilder> {
       _amount = $v.amount;
       _item_count = $v.item_count;
       _customer_id = $v.customer_id;
+      _payment_method = $v.payment_method;
       _$v = null;
     }
     return this;
@@ -257,7 +279,9 @@ class SalesBuilder implements Builder<Sales, SalesBuilder> {
                 amount, r'Sales', 'amount'),
             item_count: BuiltValueNullFieldError.checkNotNull(
                 item_count, r'Sales', 'item_count'),
-            customer_id: customer_id);
+            customer_id: customer_id,
+            payment_method: BuiltValueNullFieldError.checkNotNull(
+                payment_method, r'Sales', 'payment_method'));
     replace(_$result);
     return _$result;
   }

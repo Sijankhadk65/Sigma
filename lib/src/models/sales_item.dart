@@ -1,6 +1,8 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:sigma_app/src/models/sales.dart';
 import 'package:sigma_app/src/models/serializer.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 
 part 'sales_item.g.dart';
 
@@ -14,7 +16,7 @@ abstract class SalesItem implements Built<SalesItem, SalesItemBuilder> {
   int get quantity;
   double get unit_price;
   double get total;
-  String get sales_id;
+  String? get sales_id;
 
   SalesItem._();
   static Serializer<SalesItem> get serializer => _$salesItemSerializer;
@@ -22,6 +24,20 @@ abstract class SalesItem implements Built<SalesItem, SalesItemBuilder> {
 
   static SalesItem parseJsonToExpense(Map<String, dynamic> json) =>
       jsonSerializer.deserializeWith(serializer, json)!;
+
+  static SalesItem convertStockItemToSalesItem(
+          StockItem stockItem, int quantity) =>
+      SalesItem(
+        (item) => item
+          ..center_id = stockItem.center_id
+          ..created_at = DateTime.now().toString()
+          ..item_id = stockItem.id
+          ..quantity = quantity
+          ..unit_price = stockItem.unit_price
+          ..total = quantity * stockItem.unit_price
+          ..item_name = stockItem.item_name
+          ..item_photo_uri = stockItem.item_photo_uri,
+      );
 
   static Map<String, dynamic> parseExpenseToJson(SalesItem salesItem) => {
         "id": salesItem.id,

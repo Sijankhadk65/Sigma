@@ -12,6 +12,7 @@ abstract class Sales implements Built<Sales, SalesBuilder> {
   double get amount;
   int get item_count;
   String? get customer_id;
+  String get payment_method;
 
   Sales._();
   static Serializer<Sales> get serializer => _$salesSerializer;
@@ -28,5 +29,19 @@ abstract class Sales implements Built<Sales, SalesBuilder> {
         "amount": sales.amount,
         "item_count": sales.item_count,
         "customer_id": sales.customer_id,
+        "payment_method": sales.payment_method,
+      };
+
+  static Map<String, dynamic> parseSalesToTransactionJson(Sales sales) => {
+        "id": sales.id,
+        "center_id": sales.center_id,
+        "created_at": sales.created_at,
+        "transaction_at": sales.created_at,
+        "created_by": sales.created_by,
+        "amount": sales.amount,
+        "source": "sales",
+        "type": "credit",
+        "description": sales.id,
+        "payment_method": sales.payment_method,
       };
 }

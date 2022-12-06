@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sigma_app/src/bloc/account_bloc.dart';
+import 'package:sigma_app/src/bloc/inventory_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
 import 'package:sigma_app/src/bloc/transactions_bloc.dart';
 import 'package:sigma_app/src/bloc/worker_bloc.dart';
@@ -56,12 +57,18 @@ class _HomeState extends State<Home> {
                           child: DashScreen(),
                         ),
                       if (_selectedPage == "sales")
-                        const MaterialPage(
-                          child: SalesScreen(),
+                        MaterialPage(
+                          child: Provider(
+                            create: (context) => InventoryBloc(),
+                            child: SalesScreen(),
+                          ),
                         ),
                       if (_selectedPage == "stock")
-                        const MaterialPage(
-                          child: StockItemsScreen(),
+                        MaterialPage(
+                          child: Provider(
+                            create: ((context) => InventoryBloc()),
+                            child: StockItemsScreen(),
+                          ),
                         ),
                       if (_selectedPage == "tickets")
                         MaterialPage(

@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
 import 'package:sigma_app/src/models/sales.dart';
+import 'package:sigma_app/src/models/sales_item.dart';
 import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
@@ -268,6 +270,45 @@ class Repository {
     );
   }
 
+  Stream<Sales> postSales(
+      Sales sales, Customer customer, List<SalesItem> items) async* {
+    final response = await _provider.postSales(
+      sales,
+      items,
+      customer,
+    );
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, Sales>.fromHandlers(
+        handleData: (data, sink) {
+          final Map<String, dynamic> newStockItem =
+              jsonDecode(data)['data']['original'];
+          sink.add(
+            Sales.parseJsonToSales(
+              newStockItem,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Stream<Map<String, dynamic>> postStockItemPhoto(XFile photoFile) async* {
+    final response = await _provider.postStockItemPhoto(
+      photoFile,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, Map<String, dynamic>>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> newStockItem =
+            jsonDecode(data)['data']['original'];
+        sink.add(
+          newStockItem,
+        );
+      },
+    ));
+  }
+
   Stream<StockItem> postStockItem(StockItem stockItem) async* {
     final response = await _provider.postStockItem(
       stockItem,
@@ -285,5 +326,21 @@ class Repository {
         );
       },
     ));
+  }
+
+  Stream<List<StockItem>> fetchStock() async* {
+    final response = await _provider.fetchStock();
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, List<StockItem>>.fromHandlers(
+        handleData: (data, sink) {
+          final List<dynamic> stockItems = jsonDecode(data)['data']['original'];
+          List<StockItem> sinkData = [];
+          for (var stockItem in stockItems) {
+            sinkData.add(StockItem.parseJsonToStockItem(stockItem));
+          }
+          sink.add(sinkData);
+        },
+      ),
+    );
   }
 }

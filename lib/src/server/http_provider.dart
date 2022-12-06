@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
+import 'package:sigma_app/src/models/sales.dart';
+import 'package:sigma_app/src/models/sales_item.dart';
 import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
@@ -234,6 +237,28 @@ class HttpProvider {
     return _response;
   }
 
+  Future<HttpClientResponse> postStockItemPhoto(XFile photoFile) async {
+    List<int> byteFile = await photoFile.readAsBytes();
+    Map<String, dynamic> body = {
+      "param": {
+        "image": base64Encode(byteFile),
+        "imageName": photoFile.name,
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/inventory/stock/createItemPhoto"),
+    );
+
+    _request.headers.contentType =
+        ContentType("application", "json", charset: "utf-8");
+
+    _request.write(json.encode(body));
+
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
   Future<HttpClientResponse> postStockItem(StockItem newStockItem) async {
     Map<String, dynamic> body = {
       "param": {
@@ -243,6 +268,46 @@ class HttpProvider {
 
     HttpClientRequest _request = await _client.postUrl(
       Uri.parse("$localHostName/inventory/stock/createItem"),
+    );
+
+    _request.headers.contentType =
+        ContentType("application", "json", charset: "utf-8");
+
+    _request.write(json.encode(body));
+
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchStock() async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$localHostName/inventory/stock/getItems/01"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postSales(
+    Sales newSale,
+    List<SalesItem> salesItems,
+    Customer customer,
+  ) async {
+    Map<String, dynamic> body = {
+      "param": {
+        "customer": Customer.parseCustomerToJson(customer),
+        "sales": Sales.parseSalesToJson(newSale),
+        "salesItems": salesItems
+            .map(
+              (item) => SalesItem.parseExpenseToJson(item),
+            )
+            .toList(),
+      }
+    };
+
+    print(body);
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$localHostName/inventory/sales/create"),
     );
 
     _request.headers.contentType =

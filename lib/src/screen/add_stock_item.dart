@@ -1,3 +1,4 @@
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -32,11 +33,29 @@ class _AddStockItemState extends State<AddStockItem> {
                 hintText: "Name",
               ),
             ),
-            TextField(
-              onChanged: _inventoryBloc!.changeitemPhotoUri,
-              decoration: const InputDecoration(
-                hintText: "photo",
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: StreamBuilder<XFile>(
+                    stream: _inventoryBloc!.itemPhoto,
+                    builder: (context, snapshot) {
+                      return Text(
+                        snapshot.hasData
+                            ? snapshot.data!.name
+                            : "No File Choosen",
+                      );
+                    },
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _inventoryBloc!.choosePhoto();
+                  },
+                  child: const Text(
+                    "Choose photo",
+                  ),
+                )
+              ],
             ),
             TextField(
               onChanged: _inventoryBloc!.changequantity,
