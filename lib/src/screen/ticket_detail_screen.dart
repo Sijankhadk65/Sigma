@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/inventory_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
 import 'package:sigma_app/src/bloc/worker_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/worker.dart';
 
@@ -24,12 +26,14 @@ class TicketDetailScreen extends StatefulWidget {
 class _TicketDetailScreenState extends State<TicketDetailScreen> {
   TicketBloc? _ticketBloc;
   WorkerBloc? _workerBloc;
+  InventoryBloc? _inventoryBloc;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _ticketBloc = Provider.of<TicketBloc>(context);
     _workerBloc = Provider.of<WorkerBloc>(context);
+    _inventoryBloc = Provider.of<InventoryBloc>(context);
   }
 
   @override
@@ -37,6 +41,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
     _ticketBloc!.getTicket(widget.ticketID!);
     _ticketBloc!.getTicketIssues(widget.ticketID!);
     _ticketBloc!.getTicketExpenses(widget.ticketID!);
+    _inventoryBloc!.getStockItems();
     if (widget.workerID != null) {
       _ticketBloc!.getTicketWorker(widget.workerID!);
     } else {
@@ -196,18 +201,66 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: TextField(
-                              onChanged: _ticketBloc!.changeExpenseItemName,
-                              decoration: const InputDecoration(
-                                hintText: "itemname",
-                              ),
+                            child: StreamBuilder<List<StockItem>?>(
+                              stream: _inventoryBloc!.stockItems,
+                              builder: (context, stockSnapshot) {
+                                if (snapshot.hasError) {
+                                  return Text("${stockSnapshot.error}");
+                                }
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                    return const Text("Awaiting Bids...");
+                                  case ConnectionState.waiting:
+                                    return const Text("Waiting....");
+                                  case ConnectionState.active:
+                                    if (stockSnapshot.hasData &&
+                                        stockSnapshot.data!.isNotEmpty) {
+                                      _ticketBloc!.changeStockItem(
+                                        stockSnapshot.data![0],
+                                      );
+                                    } else {
+                                      _ticketBloc!.changeStockItem(null);
+                                    }
+
+                                    return StreamBuilder<StockItem?>(
+                                      stream: _ticketBloc!.stockItem,
+                                      builder: (context, snapshot) {
+                                        return DropdownButton<StockItem>(
+                                          value: snapshot.data,
+                                          items: stockSnapshot.hasData &&
+                                                  stockSnapshot.data!.isNotEmpty
+                                              ? stockSnapshot.data!
+                                                  .map<
+                                                      DropdownMenuItem<
+                                                          StockItem>>(
+                                                    (e) => DropdownMenuItem(
+                                                      value: e,
+                                                      child: Text(
+                                                        e.item_name,
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .toList()
+                                              : [],
+                                          onChanged: (value) {
+                                            _ticketBloc!.changeStockItem(
+                                              value!,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  case ConnectionState.done:
+                                    return const Text("Connection Done");
+                                }
+                              },
                             ),
                           ),
                           Expanded(
                             child: TextField(
-                              onChanged: _ticketBloc!.changeExpenseItemCost,
+                              onChanged: _ticketBloc!.changeSalesItemQuantity,
                               decoration: const InputDecoration(
-                                hintText: "Cost",
+                                hintText: "Quantity",
                               ),
                             ),
                           ),
@@ -260,6 +313,11 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                                     onPressed: () {
                                       _ticketBloc!.deleteExpense(
                                           expensesSnapshot.data![index]!.id!,
+                                          expensesSnapshot.data![index]!.cost,
+                                          expensesSnapshot
+                                              .data![index]!.quantity,
+                                          expensesSnapshot
+                                              .data![index]!.item_id,
                                           widget.ticketID!);
                                     },
                                     icon: const Icon(

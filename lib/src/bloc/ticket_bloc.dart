@@ -2,6 +2,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
+import 'package:sigma_app/src/models/stock_item.dart';
 import 'package:sigma_app/src/models/ticket.dart';
 import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/models/worker.dart';
@@ -93,17 +94,16 @@ class TicketBloc {
   Function(List<Expense?>) get changeTicketExpenses =>
       _ticketExpensesSubject.sink.add;
 
-  final BehaviorSubject<String> _expenseItemNameSubject =
-      BehaviorSubject<String>();
-  Stream<String> get expenseItemName => _expenseItemNameSubject.stream;
-  Function(String) get changeExpenseItemName =>
-      _expenseItemNameSubject.sink.add;
+  final BehaviorSubject<StockItem?> _stockItemSubject =
+      BehaviorSubject<StockItem?>();
+  Stream<StockItem?> get stockItem => _stockItemSubject.stream;
+  Function(StockItem?) get changeStockItem => _stockItemSubject.sink.add;
 
-  final BehaviorSubject<String> _expenseItemCostSubject =
+  final BehaviorSubject<String> _salesItemQuantitySubject =
       BehaviorSubject<String>();
-  Stream<String> get expenseItemCost => _expenseItemCostSubject.stream;
-  Function(String) get changeExpenseItemCost =>
-      _expenseItemCostSubject.sink.add;
+  Stream<String> get salesItemQuantity => _salesItemQuantitySubject.stream;
+  Function(String) get changeSalesItemQuantity =>
+      _salesItemQuantitySubject.sink.add;
 
   // Worker
   final BehaviorSubject<Worker?> _ticketWorkerSubject =
@@ -173,24 +173,69 @@ class TicketBloc {
     final newExpense = Expense(
       (e) => e
         ..ticket_id = ticketID
-        ..cost = double.parse(_expenseItemCostSubject.value)
-        ..item_name = _expenseItemNameSubject.value
+        ..cost = double.parse(_salesItemQuantitySubject.value) *
+            _stockItemSubject.value!.unit_price
+        ..unit_price = _stockItemSubject.value!.unit_price
+        ..item_name = _stockItemSubject.value!.item_name
         ..created_by = userID
-        ..created_at = DateTime.now().toString(),
+        ..created_at = DateTime.now().toString()
+        ..item_id = _stockItemSubject.value!.id
+        ..quantity = int.parse(_salesItemQuantitySubject.value),
     );
     _repo.postExpense(newExpense).listen((expense) {
       getTicketExpenses(ticketID);
+      updateTicketTotalCost(
+        newExpense.cost,
+        "increase",
+        ticketID,
+      );
+      _repo.updateStockItem(
+        {
+          "param": {
+            "command": "decrease",
+            "quantity": newExpense.quantity,
+          },
+        },
+        newExpense.item_id,
+      ).listen((event) {});
     });
   }
 
-  void deleteExpense(String expenseID, String ticketID) {
+  void deleteExpense(String expenseID, double cost, int quantity, String itemID,
+      String ticketID) {
     _repo.deleteExpense(expenseID).listen((response) {
       if (response['status'] == 1) {
         getTicketExpenses(ticketID);
+        updateTicketTotalCost(
+          cost,
+          "decrease",
+          ticketID,
+        );
+        _repo.updateStockItem(
+          {
+            "param": {
+              "command": "decrease",
+              "quantity": quantity,
+            },
+          },
+          itemID,
+        ).listen((event) {});
       } else {
         print("Delete not successful");
       }
     });
+  }
+
+  void updateTicketTotalCost(double cost, String command, String? ticketID) {
+    _updateTicket(
+      {
+        "param": {
+          "cost": cost,
+          "command": command,
+        }
+      },
+      ticketID,
+    );
   }
 
   void updateTicketWorker(String? ticketID) {
@@ -202,6 +247,7 @@ class TicketBloc {
       },
       ticketID,
     );
+    getTickets();
   }
 
   void updateTicketOpenStatus(String? ticketID) {
@@ -216,24 +262,28 @@ class TicketBloc {
       },
       ticketID,
     );
+    getTickets();
   }
 
   void updateTicketPaidStatus(String? ticketID) {
     final userID = LoginBloc.instance.loggedUser!.id;
 
-    _updateTicket({
-      "param": {
-        "is_payment_due": 0,
-        "pay_recieved_by": userID,
-      }
-    }, ticketID);
+    _updateTicket(
+      {
+        "param": {
+          "is_payment_due": 0,
+          "pay_recieved_by": userID,
+        }
+      },
+      ticketID,
+    );
+    getTickets();
   }
 
   void _updateTicket(Map<String, dynamic> updateParams, String? ticketID) {
     _repo.updateTicket(updateParams, ticketID!).listen((ticket) {
       changeTicket(ticket);
     });
-    getTickets();
   }
 
   void createTicketTransaction(Ticket ticket) {

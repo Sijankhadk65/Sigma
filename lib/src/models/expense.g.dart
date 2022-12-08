@@ -26,11 +26,20 @@ class _$ExpenseSerializer implements StructuredSerializer<Expense> {
           specifiedType: const FullType(String)),
       'cost',
       serializers.serialize(object.cost, specifiedType: const FullType(double)),
+      'unit_price',
+      serializers.serialize(object.unit_price,
+          specifiedType: const FullType(double)),
       'created_by',
       serializers.serialize(object.created_by,
           specifiedType: const FullType(String)),
       'created_at',
       serializers.serialize(object.created_at,
+          specifiedType: const FullType(String)),
+      'quantity',
+      serializers.serialize(object.quantity,
+          specifiedType: const FullType(int)),
+      'item_id',
+      serializers.serialize(object.item_id,
           specifiedType: const FullType(String)),
     ];
     Object? value;
@@ -71,12 +80,24 @@ class _$ExpenseSerializer implements StructuredSerializer<Expense> {
           result.cost = serializers.deserialize(value,
               specifiedType: const FullType(double))! as double;
           break;
+        case 'unit_price':
+          result.unit_price = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
         case 'created_by':
           result.created_by = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
         case 'created_at':
           result.created_at = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'quantity':
+          result.quantity = serializers.deserialize(value,
+              specifiedType: const FullType(int))! as int;
+          break;
+        case 'item_id':
+          result.item_id = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
       }
@@ -96,9 +117,15 @@ class _$Expense extends Expense {
   @override
   final double cost;
   @override
+  final double unit_price;
+  @override
   final String created_by;
   @override
   final String created_at;
+  @override
+  final int quantity;
+  @override
+  final String item_id;
 
   factory _$Expense([void Function(ExpenseBuilder)? updates]) =>
       (new ExpenseBuilder()..update(updates))._build();
@@ -108,14 +135,20 @@ class _$Expense extends Expense {
       required this.ticket_id,
       required this.item_name,
       required this.cost,
+      required this.unit_price,
       required this.created_by,
-      required this.created_at})
+      required this.created_at,
+      required this.quantity,
+      required this.item_id})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(ticket_id, r'Expense', 'ticket_id');
     BuiltValueNullFieldError.checkNotNull(item_name, r'Expense', 'item_name');
     BuiltValueNullFieldError.checkNotNull(cost, r'Expense', 'cost');
+    BuiltValueNullFieldError.checkNotNull(unit_price, r'Expense', 'unit_price');
     BuiltValueNullFieldError.checkNotNull(created_by, r'Expense', 'created_by');
     BuiltValueNullFieldError.checkNotNull(created_at, r'Expense', 'created_at');
+    BuiltValueNullFieldError.checkNotNull(quantity, r'Expense', 'quantity');
+    BuiltValueNullFieldError.checkNotNull(item_id, r'Expense', 'item_id');
   }
 
   @override
@@ -133,8 +166,11 @@ class _$Expense extends Expense {
         ticket_id == other.ticket_id &&
         item_name == other.item_name &&
         cost == other.cost &&
+        unit_price == other.unit_price &&
         created_by == other.created_by &&
-        created_at == other.created_at;
+        created_at == other.created_at &&
+        quantity == other.quantity &&
+        item_id == other.item_id;
   }
 
   @override
@@ -142,11 +178,17 @@ class _$Expense extends Expense {
     return $jf($jc(
         $jc(
             $jc(
-                $jc($jc($jc(0, id.hashCode), ticket_id.hashCode),
-                    item_name.hashCode),
-                cost.hashCode),
-            created_by.hashCode),
-        created_at.hashCode));
+                $jc(
+                    $jc(
+                        $jc(
+                            $jc($jc($jc(0, id.hashCode), ticket_id.hashCode),
+                                item_name.hashCode),
+                            cost.hashCode),
+                        unit_price.hashCode),
+                    created_by.hashCode),
+                created_at.hashCode),
+            quantity.hashCode),
+        item_id.hashCode));
   }
 
   @override
@@ -156,8 +198,11 @@ class _$Expense extends Expense {
           ..add('ticket_id', ticket_id)
           ..add('item_name', item_name)
           ..add('cost', cost)
+          ..add('unit_price', unit_price)
           ..add('created_by', created_by)
-          ..add('created_at', created_at))
+          ..add('created_at', created_at)
+          ..add('quantity', quantity)
+          ..add('item_id', item_id))
         .toString();
   }
 }
@@ -181,6 +226,10 @@ class ExpenseBuilder implements Builder<Expense, ExpenseBuilder> {
   double? get cost => _$this._cost;
   set cost(double? cost) => _$this._cost = cost;
 
+  double? _unit_price;
+  double? get unit_price => _$this._unit_price;
+  set unit_price(double? unit_price) => _$this._unit_price = unit_price;
+
   String? _created_by;
   String? get created_by => _$this._created_by;
   set created_by(String? created_by) => _$this._created_by = created_by;
@@ -188,6 +237,14 @@ class ExpenseBuilder implements Builder<Expense, ExpenseBuilder> {
   String? _created_at;
   String? get created_at => _$this._created_at;
   set created_at(String? created_at) => _$this._created_at = created_at;
+
+  int? _quantity;
+  int? get quantity => _$this._quantity;
+  set quantity(int? quantity) => _$this._quantity = quantity;
+
+  String? _item_id;
+  String? get item_id => _$this._item_id;
+  set item_id(String? item_id) => _$this._item_id = item_id;
 
   ExpenseBuilder();
 
@@ -198,8 +255,11 @@ class ExpenseBuilder implements Builder<Expense, ExpenseBuilder> {
       _ticket_id = $v.ticket_id;
       _item_name = $v.item_name;
       _cost = $v.cost;
+      _unit_price = $v.unit_price;
       _created_by = $v.created_by;
       _created_at = $v.created_at;
+      _quantity = $v.quantity;
+      _item_id = $v.item_id;
       _$v = null;
     }
     return this;
@@ -229,10 +289,16 @@ class ExpenseBuilder implements Builder<Expense, ExpenseBuilder> {
                 item_name, r'Expense', 'item_name'),
             cost:
                 BuiltValueNullFieldError.checkNotNull(cost, r'Expense', 'cost'),
+            unit_price: BuiltValueNullFieldError.checkNotNull(
+                unit_price, r'Expense', 'unit_price'),
             created_by: BuiltValueNullFieldError.checkNotNull(
                 created_by, r'Expense', 'created_by'),
             created_at: BuiltValueNullFieldError.checkNotNull(
-                created_at, r'Expense', 'created_at'));
+                created_at, r'Expense', 'created_at'),
+            quantity: BuiltValueNullFieldError.checkNotNull(
+                quantity, r'Expense', 'quantity'),
+            item_id: BuiltValueNullFieldError.checkNotNull(
+                item_id, r'Expense', 'item_id'));
     replace(_$result);
     return _$result;
   }

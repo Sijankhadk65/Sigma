@@ -162,7 +162,7 @@ class InventoryBloc {
 
   void getStockItems() {
     _repo.fetchStock().listen((stockItems) {
-      changeStockItems(stockItems);
+      changeStockItems(stockItems!);
     });
   }
 

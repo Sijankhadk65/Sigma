@@ -334,19 +334,41 @@ class Repository {
     ));
   }
 
-  Stream<List<StockItem>> fetchStock() async* {
+  Stream<List<StockItem>?> fetchStock() async* {
     final response = await _provider.fetchStock();
     yield* utf8.decoder.bind(response).transform(
-      StreamTransformer<String, List<StockItem>>.fromHandlers(
+      StreamTransformer<String, List<StockItem>?>.fromHandlers(
         handleData: (data, sink) {
           final List<dynamic> stockItems = jsonDecode(data)['data']['original'];
           List<StockItem> sinkData = [];
-          for (var stockItem in stockItems) {
-            sinkData.add(StockItem.parseJsonToStockItem(stockItem));
+          if (stockItems != []) {
+            for (var stockItem in stockItems) {
+              sinkData.add(StockItem.parseJsonToStockItem(stockItem));
+            }
+            sink.add(sinkData);
+          } else {
+            sink.add(null);
           }
-          sink.add(sinkData);
         },
       ),
     );
+  }
+
+  Stream<StockItem?> updateStockItem(
+    Map<String, dynamic> updateParams,
+    String? itemID,
+  ) async* {
+    final response = await _provider.updateStockItem(
+      updateParams,
+      itemID!,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, StockItem?>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> ticket = jsonDecode(data);
+        sink.add(StockItem.parseJsonToStockItem(ticket));
+      },
+    ));
   }
 }

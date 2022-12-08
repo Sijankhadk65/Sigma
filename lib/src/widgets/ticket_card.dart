@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/inventory_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
 import 'package:sigma_app/src/bloc/worker_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
@@ -190,6 +191,11 @@ class TicketCard extends StatelessWidget {
                               Provider(
                                 create: (_) => WorkerBloc(),
                                 dispose: (context, WorkerBloc bloc) =>
+                                    bloc.dispose(),
+                              ),
+                              Provider(
+                                create: (_) => InventoryBloc(),
+                                dispose: (context, InventoryBloc bloc) =>
                                     bloc.dispose(),
                               ),
                             ],

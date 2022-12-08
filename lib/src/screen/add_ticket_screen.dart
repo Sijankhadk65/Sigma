@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
-import 'package:sigma_app/src/models/issue.dart';
-import 'package:sigma_app/src/models/ticket.dart';
-import 'package:sigma_app/src/server/repository.dart';
 import 'package:sigma_app/src/widgets/ticket_sumary.dart';
-import 'package:web_date_picker/web_date_picker.dart';
 
 import '../widgets/ticket_input_form.dart';
 

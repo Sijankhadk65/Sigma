@@ -277,6 +277,23 @@ class HttpProvider {
     return _response;
   }
 
+  Future<HttpClientResponse> updateStockItem(
+    Map<String, dynamic> updateParams,
+    String itemID,
+  ) async {
+    HttpClientRequest _request = await _client.putUrl(
+      Uri.parse("$localHostName/inventory/stock/updateItem/$itemID"),
+    );
+
+    _request.headers.contentType =
+        ContentType("application", "json", charset: "utf-8");
+
+    _request.write(json.encode(updateParams));
+
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
   Future<HttpClientResponse> fetchStock() async {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$localHostName/inventory/stock/getItems/01"),
