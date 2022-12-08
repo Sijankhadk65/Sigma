@@ -236,18 +236,24 @@ class Repository {
     );
   }
 
-  Stream<User> login(String username, String password) async* {
-    final response = await _provider.login(username, password);
-    // print(response.headers);
-    yield* utf8.decoder.bind(response).transform(
-      StreamTransformer<String, User>.fromHandlers(
+  Stream<User?> login(String username, String password) async* {
+    HttpClientResponse? response;
+    String exception = "";
+    try {
+      response = await _provider.login(username, password);
+    } on Exception {
+      print("There has been an exception");
+    }
+
+    yield* utf8.decoder.bind(response!).transform(
+      StreamTransformer<String, User?>.fromHandlers(
         handleData: (data, sink) {
-          // print(User.parseJsonToUser(jsonDecode(data)['data']['original']));
-          if (jsonDecode(data)['data']['original'] != {}) {
+          if (jsonDecode(data)['data']['exception'] == null) {
             final user = jsonDecode(data)['data']['original'];
             sink.add(User.parseJsonToUser(user));
           } else {
-            sink.addError(jsonDecode(data));
+            sink.addError(jsonDecode(data)['data']['exception']);
+            sink.add(null);
           }
         },
       ),

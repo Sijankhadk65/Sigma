@@ -222,9 +222,7 @@ class HttpProvider {
 
     _request.headers.contentType =
         ContentType("application", "json", charset: "utf-8");
-    // _request.headers.contentLength = body.toString().length;s
     _request.write(json.encode(body));
-    print(json.encode(body));
     HttpClientResponse _response = await _request.close();
     return _response;
   }
