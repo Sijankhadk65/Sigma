@@ -290,7 +290,7 @@ class TicketBloc {
     final userID = LoginBloc.instance.loggedUser!.id;
     final ticketTransaction = Transaction(
       (t) => t
-        ..amount = 100.00
+        ..amount = ticket.total_service_cost!.toDouble()
         ..center_id = "01"
         ..created_at = DateTime.now().toString()
         ..created_by = userID
