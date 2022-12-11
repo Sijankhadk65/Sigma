@@ -15,6 +15,22 @@ class AddTicketScreen extends StatefulWidget {
 class _AddTicketScreenState extends State<AddTicketScreen> {
   TicketBloc? _ticketBloc;
 
+  TextEditingController? _customerNameController;
+  TextEditingController? _customerAddressController;
+  TextEditingController? _customerPhoneController;
+  TextEditingController? _deviceManufracturerController;
+  TextEditingController? _deviceModelController;
+
+  @override
+  void initState() {
+    super.initState();
+    _customerNameController = TextEditingController();
+    _customerAddressController = TextEditingController();
+    _customerPhoneController = TextEditingController();
+    _deviceManufracturerController = TextEditingController();
+    _deviceModelController = TextEditingController();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -30,6 +46,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           Expanded(
             flex: 3,
             child: TicketInputForm(
+              controllers: [
+                _deviceManufracturerController!,
+                _deviceModelController!,
+                _customerNameController!,
+                _customerPhoneController!,
+                _customerAddressController!,
+              ],
               ticketBloc: _ticketBloc,
             ),
           ),
@@ -39,6 +62,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           Expanded(
             flex: 2,
             child: TicketSummary(
+              controllers: [
+                _deviceManufracturerController!,
+                _deviceModelController!,
+                _customerNameController!,
+                _customerPhoneController!,
+                _customerAddressController!,
+              ],
               ticketBloc: _ticketBloc,
             ),
           )

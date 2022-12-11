@@ -7,10 +7,12 @@ class TicketInputForm extends StatefulWidget {
   const TicketInputForm({
     Key? key,
     required TicketBloc? ticketBloc,
+    required this.controllers,
   })  : _ticketBloc = ticketBloc,
         super(key: key);
 
   final TicketBloc? _ticketBloc;
+  final List<TextEditingController> controllers;
 
   @override
   State<TicketInputForm> createState() => _TicketInputFormState();
@@ -58,11 +60,13 @@ class _TicketInputFormState extends State<TicketInputForm> {
                   ],
                 ),
                 InputField(
+                  controller: widget.controllers[0],
                   onChanged: widget._ticketBloc!.changeDeviceManufacturer,
                   fieldHint: "Lenovo",
                   fieldLabel: "Device Manufacturer",
                 ),
                 InputField(
+                  controller: widget.controllers[1],
                   onChanged: widget._ticketBloc!.changeDeviceModel,
                   fieldHint: "Li-300000",
                   fieldLabel: "Device Model",
@@ -98,16 +102,19 @@ class _TicketInputFormState extends State<TicketInputForm> {
                   ],
                 ),
                 InputField(
+                  controller: widget.controllers[2],
                   onChanged: widget._ticketBloc!.changeCustomerName,
                   fieldHint: "John Doe",
                   fieldLabel: "Customer's Name",
                 ),
                 InputField(
+                  controller: widget.controllers[3],
                   onChanged: widget._ticketBloc!.changeCustomerPhone,
                   fieldHint: "98-XXX-XXXXX",
                   fieldLabel: "Customer's Number",
                 ),
                 InputField(
+                  controller: widget.controllers[4],
                   onChanged: widget._ticketBloc!.changeCustomerAddress,
                   fieldHint: "Sukkhanagar",
                   fieldLabel: "Customer's Address",

@@ -7,11 +7,13 @@ class InputField extends StatelessWidget {
     required this.onChanged,
     required this.fieldHint,
     required this.fieldLabel,
+    required this.controller,
   }) : super(key: key);
 
   final String fieldLabel;
   final String fieldHint;
   final Function(String) onChanged;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,7 @@ class InputField extends StatelessWidget {
                 left: 10,
               ),
               child: TextField(
+                controller: controller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: fieldHint,

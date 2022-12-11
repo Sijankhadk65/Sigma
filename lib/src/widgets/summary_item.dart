@@ -10,7 +10,7 @@ class SummaryItem<T> extends StatelessWidget {
     this.child,
   }) : super(key: key);
 
-  final Stream<String>? childStream;
+  final Stream<String?>? childStream;
   final String childLabel;
   final Widget? child;
   final String? placeholder;
@@ -36,17 +36,20 @@ class SummaryItem<T> extends StatelessWidget {
           Expanded(
             child: child != null
                 ? child!
-                : StreamBuilder<String>(
+                : StreamBuilder<String?>(
                     stream: childStream,
                     builder: (context, snapshot) {
                       return Text(
-                        snapshot.hasData ? snapshot.data! : placeholder!,
+                        snapshot.hasData && snapshot.data != ""
+                            ? snapshot.data!
+                            : placeholder!,
                         textAlign: TextAlign.end,
                         style: GoogleFonts.nunito(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
-                          color:
-                              snapshot.hasData ? Colors.black : Colors.black54,
+                          color: snapshot.hasData && snapshot.data != ""
+                              ? Colors.black
+                              : Colors.black54,
                         ),
                       );
                     },

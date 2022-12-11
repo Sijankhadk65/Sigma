@@ -18,12 +18,6 @@ class _$TicketSerializer implements StructuredSerializer<Ticket> {
   Iterable<Object?> serialize(Serializers serializers, Ticket object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
-      'device_manufacturer',
-      serializers.serialize(object.device_manufacturer,
-          specifiedType: const FullType(String)),
-      'device_model',
-      serializers.serialize(object.device_model,
-          specifiedType: const FullType(String)),
       'opened_by',
       serializers.serialize(object.opened_by,
           specifiedType: const FullType(String)),
@@ -54,6 +48,20 @@ class _$TicketSerializer implements StructuredSerializer<Ticket> {
     if (value != null) {
       result
         ..add('id')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
+    value = object.device_manufacturer;
+    if (value != null) {
+      result
+        ..add('device_manufacturer')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
+    value = object.device_model;
+    if (value != null) {
+      result
+        ..add('device_model')
         ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
@@ -125,11 +133,11 @@ class _$TicketSerializer implements StructuredSerializer<Ticket> {
           break;
         case 'device_manufacturer':
           result.device_manufacturer = serializers.deserialize(value,
-              specifiedType: const FullType(String))! as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'device_model':
           result.device_model = serializers.deserialize(value,
-              specifiedType: const FullType(String))! as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'opened_by':
           result.opened_by = serializers.deserialize(value,
@@ -202,9 +210,9 @@ class _$Ticket extends Ticket {
   @override
   final String? id;
   @override
-  final String device_manufacturer;
+  final String? device_manufacturer;
   @override
-  final String device_model;
+  final String? device_model;
   @override
   final String opened_by;
   @override
@@ -241,8 +249,8 @@ class _$Ticket extends Ticket {
 
   _$Ticket._(
       {this.id,
-      required this.device_manufacturer,
-      required this.device_model,
+      this.device_manufacturer,
+      this.device_model,
       required this.opened_by,
       required this.center_id,
       this.customer_id,
@@ -259,10 +267,6 @@ class _$Ticket extends Ticket {
       this.pay_recieved_by,
       this.paid_at})
       : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        device_manufacturer, r'Ticket', 'device_manufacturer');
-    BuiltValueNullFieldError.checkNotNull(
-        device_model, r'Ticket', 'device_model');
     BuiltValueNullFieldError.checkNotNull(opened_by, r'Ticket', 'opened_by');
     BuiltValueNullFieldError.checkNotNull(center_id, r'Ticket', 'center_id');
     BuiltValueNullFieldError.checkNotNull(is_closed, r'Ticket', 'is_closed');
@@ -502,10 +506,8 @@ class TicketBuilder implements Builder<Ticket, TicketBuilder> {
     final _$result = _$v ??
         new _$Ticket._(
             id: id,
-            device_manufacturer: BuiltValueNullFieldError.checkNotNull(
-                device_manufacturer, r'Ticket', 'device_manufacturer'),
-            device_model: BuiltValueNullFieldError.checkNotNull(
-                device_model, r'Ticket', 'device_model'),
+            device_manufacturer: device_manufacturer,
+            device_model: device_model,
             opened_by: BuiltValueNullFieldError.checkNotNull(
                 opened_by, r'Ticket', 'opened_by'),
             center_id: BuiltValueNullFieldError.checkNotNull(
@@ -525,7 +527,8 @@ class TicketBuilder implements Builder<Ticket, TicketBuilder> {
                 issue_count, r'Ticket', 'issue_count'),
             open_issue: BuiltValueNullFieldError.checkNotNull(
                 open_issue, r'Ticket', 'open_issue'),
-            closed_issue: BuiltValueNullFieldError.checkNotNull(closed_issue, r'Ticket', 'closed_issue'),
+            closed_issue: BuiltValueNullFieldError.checkNotNull(
+                closed_issue, r'Ticket', 'closed_issue'),
             pay_recieved_by: pay_recieved_by,
             paid_at: paid_at);
     replace(_$result);
