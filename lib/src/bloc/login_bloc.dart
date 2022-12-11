@@ -21,13 +21,14 @@ class LoginBloc {
   Stream<User?> get currentUser => _currentUserSubject.stream;
   Function(User?) get changeCurrentUser => _currentUserSubject.sink.add;
 
-  LoginBloc() {
-    changeCurrentUser(null);
-  }
+  final BehaviorSubject<bool> _isLogginInSubject = BehaviorSubject<bool>();
+  Stream<bool> get isLogginIn => _isLogginInSubject.stream;
+  Function(bool) get changeisLogginIn => _isLogginInSubject.sink.add;
 
   void dispose() {}
 
   void login() {
+    changeisLogginIn(true);
     _repo
         .login(
       _userNameSubject.value,
@@ -36,6 +37,7 @@ class LoginBloc {
         .listen((user) {
       changeCurrentUser(user);
       _loggedUser = user;
+      changeisLogginIn(false);
     });
   }
 
@@ -46,5 +48,8 @@ class LoginBloc {
 
   static LoginBloc get instance => _loginBloc;
 
-  LoginBloc._internal();
+  LoginBloc._internal() {
+    changeCurrentUser(null);
+    changeisLogginIn(false);
+  }
 }
