@@ -12,6 +12,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _loginBloc = LoginBloc.instance;
+  bool _isPasswordVisible = false;
+
+  void togglePassword() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         TextField(
-                          obscureText: true,
+                          obscureText: _isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: "Password",
                             hintStyle: GoogleFonts.nunito(),

@@ -25,6 +25,12 @@ class LoginBloc {
   Stream<bool> get isLogginIn => _isLogginInSubject.stream;
   Function(bool) get changeisLogginIn => _isLogginInSubject.sink.add;
 
+  final BehaviorSubject<bool> _isPasswordVisibleSubject =
+      BehaviorSubject<bool>();
+  Stream<bool> get isPasswordVisible => _isPasswordVisibleSubject.stream;
+  Function(bool) get changeIsPasswordVisible =>
+      _isPasswordVisibleSubject.sink.add;
+
   void dispose() {}
 
   void login() {
@@ -51,5 +57,6 @@ class LoginBloc {
   LoginBloc._internal() {
     changeCurrentUser(null);
     changeisLogginIn(false);
+    changeIsPasswordVisible(false);
   }
 }
