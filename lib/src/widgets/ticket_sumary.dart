@@ -9,10 +9,12 @@ class TicketSummary extends StatelessWidget {
   const TicketSummary({
     Key? key,
     required TicketBloc? ticketBloc,
+    required this.controllers,
   })  : _ticketBloc = ticketBloc,
         super(key: key);
 
   final TicketBloc? _ticketBloc;
+  final List<TextEditingController> controllers;
 
   @override
   Widget build(BuildContext context) {
@@ -179,6 +181,11 @@ class TicketSummary extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               _ticketBloc!.saveTicket();
+                              controllers.forEach(
+                                (element) {
+                                  element.clear();
+                                },
+                              );
                             },
                             child: Text(
                               "Save Ticket",

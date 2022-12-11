@@ -10,9 +10,9 @@ abstract class Ticket implements Built<Ticket, TicketBuilder> {
   // Ticket ID
   String? get id;
   // Device Manufracturer
-  String get device_manufacturer;
+  String? get device_manufacturer;
   // Device Manufracturer
-  String get device_model;
+  String? get device_model;
   // Admin ID
   String get opened_by;
   // Center ID

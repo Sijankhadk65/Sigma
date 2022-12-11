@@ -27,20 +27,20 @@ class TicketBloc {
   Function(bool) get changeIsSaving => _isSavingSubject.sink.add;
 
   // New Ticket Info
-  final BehaviorSubject<String> _customerNameSubject =
-      BehaviorSubject<String>();
-  Stream<String> get customerName => _customerNameSubject.stream;
-  Function(String) get changeCustomerName => _customerNameSubject.sink.add;
+  final BehaviorSubject<String?> _customerNameSubject =
+      BehaviorSubject<String?>();
+  Stream<String?> get customerName => _customerNameSubject.stream;
+  Function(String?) get changeCustomerName => _customerNameSubject.sink.add;
 
-  final BehaviorSubject<String> _customerPhoneSubject =
-      BehaviorSubject<String>();
-  Stream<String> get customerPhone => _customerPhoneSubject.stream;
-  Function(String) get changeCustomerPhone => _customerPhoneSubject.sink.add;
+  final BehaviorSubject<String?> _customerPhoneSubject =
+      BehaviorSubject<String?>();
+  Stream<String?> get customerPhone => _customerPhoneSubject.stream;
+  Function(String?) get changeCustomerPhone => _customerPhoneSubject.sink.add;
 
-  final BehaviorSubject<String> _customerAddressSubject =
-      BehaviorSubject<String>();
-  Stream<String> get customerAddress => _customerAddressSubject.stream;
-  Function(String) get changeCustomerAddress =>
+  final BehaviorSubject<String?> _customerAddressSubject =
+      BehaviorSubject<String?>();
+  Stream<String?> get customerAddress => _customerAddressSubject.stream;
+  Function(String?) get changeCustomerAddress =>
       _customerAddressSubject.sink.add;
 
   final BehaviorSubject<DateTime?> _openedDateSubject =
@@ -70,15 +70,16 @@ class TicketBloc {
   Function(String) get changeTotalCost => _totalCostSubject.sink.add;
 
   //Device info
-  final BehaviorSubject<String> _deviceManufacturerSubject =
-      BehaviorSubject<String>();
-  Stream<String> get deviceManufacturer => _deviceManufacturerSubject.stream;
-  Function(String) get changeDeviceManufacturer =>
+  final BehaviorSubject<String?> _deviceManufacturerSubject =
+      BehaviorSubject<String?>();
+  Stream<String?> get deviceManufacturer => _deviceManufacturerSubject.stream;
+  Function(String?) get changeDeviceManufacturer =>
       _deviceManufacturerSubject.sink.add;
 
-  final BehaviorSubject<String> _deviceModelSubject = BehaviorSubject<String>();
-  Stream<String> get deviceModel => _deviceModelSubject.stream;
-  Function(String) get changeDeviceModel => _deviceModelSubject.sink.add;
+  final BehaviorSubject<String?> _deviceModelSubject =
+      BehaviorSubject<String>();
+  Stream<String?> get deviceModel => _deviceModelSubject.stream;
+  Function(String?) get changeDeviceModel => _deviceModelSubject.sink.add;
 
   //Issue
   final BehaviorSubject<List<Issue?>> _ticketIssuesSubject =
@@ -309,7 +310,7 @@ class TicketBloc {
       (c) => c
         ..name = _customerNameSubject.value
         ..address = _customerAddressSubject.value
-        ..ph_number = int.parse(_customerPhoneSubject.value),
+        ..ph_number = int.parse(_customerPhoneSubject.value!),
     );
 
     final userID = LoginBloc.instance.loggedUser!.id;
@@ -337,7 +338,15 @@ class TicketBloc {
     _repo.postTicket(newTicket, newIssues, newCustomer).listen(
       (ticket) {
         if (ticket != null) {
+          print("Ticket Posted");
           changeIsSaving(false);
+          newIssues = [];
+          changeTicketIssues(newIssues);
+          changeCustomerName("");
+          changeCustomerAddress("");
+          changeCustomerPhone("");
+          changeDeviceManufacturer("");
+          changeDeviceModel("");
         }
       },
     );

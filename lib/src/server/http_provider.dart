@@ -17,14 +17,13 @@ class HttpProvider {
 
   HttpProvider._(this._client);
 
-  final remoteHostName = "https://api.microchipexpert.com.np";
-  final localHostName = "http://localhost:8000";
+  final hostName = "https://api.microchipexpert.com.np";
 
   static final instance = HttpProvider._(HttpClient());
 
   Future<HttpClientResponse> fetchTickets() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/ticket"),
+      Uri.parse("$hostName/ticket"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -34,7 +33,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/ticket/$id"),
+      Uri.parse("$hostName/ticket/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -44,7 +43,7 @@ class HttpProvider {
     String? ticketID,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/issue/$ticketID"),
+      Uri.parse("$hostName/issue/$ticketID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -54,7 +53,7 @@ class HttpProvider {
     String? ticketID,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/expense/$ticketID"),
+      Uri.parse("$hostName/expense/$ticketID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -68,7 +67,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/expense/create"),
+      Uri.parse("$hostName/expense/create"),
     );
 
     _request.headers.contentType =
@@ -81,7 +80,7 @@ class HttpProvider {
 
   Future deleteExpense(String expenseID) async {
     HttpClientRequest _request = await _client.deleteUrl(
-      Uri.parse("$localHostName/expense/delete/$expenseID"),
+      Uri.parse("$hostName/expense/delete/$expenseID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -105,7 +104,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/ticket/create"),
+      Uri.parse("$hostName/ticket/create"),
     );
 
     _request.headers.contentType =
@@ -122,7 +121,7 @@ class HttpProvider {
   ) async {
     Map<String, dynamic> body = updateParams;
     HttpClientRequest _request = await _client.putUrl(
-      Uri.parse("$localHostName/ticket/update/$ticketID"),
+      Uri.parse("$hostName/ticket/update/$ticketID"),
     );
 
     _request.headers.contentType =
@@ -135,7 +134,7 @@ class HttpProvider {
 
   Future deleteTicket(String ticketID) async {
     HttpClientRequest _request = await _client.deleteUrl(
-      Uri.parse("$localHostName/ticket/delete/$ticketID"),
+      Uri.parse("$hostName/ticket/delete/$ticketID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -145,7 +144,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/customer/$id"),
+      Uri.parse("$hostName/customer/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -155,7 +154,7 @@ class HttpProvider {
     String? center_id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/worker/center/$center_id"),
+      Uri.parse("$hostName/worker/center/$center_id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -165,7 +164,7 @@ class HttpProvider {
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/worker/$id"),
+      Uri.parse("$hostName/worker/$id"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -173,7 +172,7 @@ class HttpProvider {
 
   Future<HttpClientResponse> fetchWorkers() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/worker"),
+      Uri.parse("$hostName/worker"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -188,7 +187,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/accounting/transaction/create"),
+      Uri.parse("$hostName/accounting/transaction/create"),
     );
 
     _request.headers.contentType =
@@ -201,7 +200,7 @@ class HttpProvider {
 
   Future<HttpClientResponse> fetchTransactions() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/accounting/transaction"),
+      Uri.parse("$hostName/accounting/transaction"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -217,7 +216,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/user/authenticate"),
+      Uri.parse("$hostName/user/authenticate"),
     );
 
     _request.headers.contentType =
@@ -229,7 +228,7 @@ class HttpProvider {
 
   Future<HttpClientResponse> fetchSales() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/inventory/sales/01"),
+      Uri.parse("$hostName/inventory/sales/01"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -245,7 +244,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/inventory/stock/createItemPhoto"),
+      Uri.parse("$hostName/inventory/stock/createItemPhoto"),
     );
 
     _request.headers.contentType =
@@ -265,7 +264,7 @@ class HttpProvider {
     };
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/inventory/stock/createItem"),
+      Uri.parse("$hostName/inventory/stock/createItem"),
     );
 
     _request.headers.contentType =
@@ -282,7 +281,7 @@ class HttpProvider {
     String itemID,
   ) async {
     HttpClientRequest _request = await _client.putUrl(
-      Uri.parse("$localHostName/inventory/stock/updateItem/$itemID"),
+      Uri.parse("$hostName/inventory/stock/updateItem/$itemID"),
     );
 
     _request.headers.contentType =
@@ -296,7 +295,7 @@ class HttpProvider {
 
   Future<HttpClientResponse> fetchStock() async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$localHostName/inventory/stock/getItems/01"),
+      Uri.parse("$hostName/inventory/stock/getItems/01"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -322,7 +321,7 @@ class HttpProvider {
     print(body);
 
     HttpClientRequest _request = await _client.postUrl(
-      Uri.parse("$localHostName/inventory/sales/create"),
+      Uri.parse("$hostName/inventory/sales/create"),
     );
 
     _request.headers.contentType =

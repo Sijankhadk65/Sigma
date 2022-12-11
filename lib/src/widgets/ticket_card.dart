@@ -39,14 +39,14 @@ class TicketCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Text(
-                ticket!.device_manufacturer,
+                ticket!.device_manufacturer!,
                 textAlign: TextAlign.center,
               ),
             ),
             Expanded(
               flex: 3,
               child: Text(
-                ticket!.device_model,
+                ticket!.device_model!,
                 textAlign: TextAlign.center,
               ),
             ),
