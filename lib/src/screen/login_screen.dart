@@ -49,15 +49,31 @@ class _LoginScreenState extends State<LoginScreen> {
                             _loginBloc.changeUserName(value);
                           },
                         ),
-                        TextField(
-                          obscureText: _isPasswordVisible,
-                          decoration: InputDecoration(
-                            hintText: "Password",
-                            hintStyle: GoogleFonts.nunito(),
-                          ),
-                          onChanged: (value) {
-                            _loginBloc.changePassword(value);
-                          },
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                obscureText: _isPasswordVisible,
+                                decoration: InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: GoogleFonts.nunito(),
+                                ),
+                                onChanged: (value) {
+                                  _loginBloc.changePassword(value);
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.remove_red_eye_outlined,
+                              ),
+                            )
+                          ],
                         ),
                         SizedBox.fromSize(
                           size: const Size.fromHeight(
