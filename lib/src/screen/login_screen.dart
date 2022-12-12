@@ -73,7 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         snapshot.hasError
-                            ? Text("${snapshot.error}")
+                            ? Text(
+                                "${snapshot.error}",
+                              )
                             : Container(),
                       ],
                     ),
