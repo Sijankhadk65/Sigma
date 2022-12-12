@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
@@ -118,6 +121,7 @@ class TicketBloc {
   Function(Worker) get changeCurrentWorker => _currentWorkerSubject.sink.add;
 
   List<Issue> newIssues = [];
+  String? _customerID;
 
   TicketBloc() {
     changeIsSaving(false);
@@ -304,14 +308,19 @@ class TicketBloc {
     _repo.postTransaction(ticketTransaction).listen((event) {});
   }
 
-  void saveTicket() {
+  void saveTicket() async {
     changeIsSaving(true);
-    final newCustomer = Customer(
-      (c) => c
-        ..name = _customerNameSubject.value
-        ..address = _customerAddressSubject.value
-        ..ph_number = int.parse(_customerPhoneSubject.value!),
-    );
+    if (_customerID == null) {
+      final newCustomer = Customer(
+        (c) => c
+          ..name = _customerNameSubject.value
+          ..address = _customerAddressSubject.value
+          ..ph_number = int.parse(_customerPhoneSubject.value!),
+      );
+
+      final customer = await _repo.postCustomer(newCustomer);
+      _customerID = customer.id;
+    }
 
     final userID = LoginBloc.instance.loggedUser!.id;
 
@@ -320,7 +329,7 @@ class TicketBloc {
         ..center_id = "01"
         ..closed_at = null
         ..closed_by = null
-        ..customer_id = null
+        ..customer_id = _customerID
         ..pay_recieved_by = null
         ..paid_at = null
         ..closed_issue = 0
@@ -335,7 +344,12 @@ class TicketBloc {
         ..device_model = _deviceModelSubject.value
         ..total_service_cost = null,
     );
-    _repo.postTicket(newTicket, newIssues, newCustomer).listen(
+    _repo
+        .postTicket(
+      newTicket,
+      newIssues,
+    )
+        .listen(
       (ticket) {
         if (ticket != null) {
           print("Ticket Posted");
@@ -381,5 +395,17 @@ class TicketBloc {
 
   Stream<Customer?> getTicketCustomer(String id) {
     return _repo.fetchCustomer(id);
+  }
+
+  getCustomerFromContact(List<TextEditingController> controllers) {
+    _repo.fetchCustomerFromNumber(_customerPhoneSubject.value!).listen(
+      (customer) {
+        changeCustomerName(customer!.name);
+        controllers[0].text = customer.name;
+        changeCustomerAddress(customer.address);
+        controllers[1].text = customer.address;
+        _customerID = customer.id;
+      },
+    );
   }
 }

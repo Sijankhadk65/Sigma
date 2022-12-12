@@ -114,12 +114,10 @@ class Repository {
   Stream<Ticket?> postTicket(
     Ticket? newTicket,
     List<Issue?> newIssues,
-    Customer newCustomer,
   ) async* {
     final response = await _provider.postTicket(
       newTicket,
       newIssues,
-      newCustomer,
     );
     yield* utf8.decoder
         .bind(response)
@@ -174,6 +172,30 @@ class Repository {
         },
       ),
     );
+  }
+
+  Stream<Customer?> fetchCustomerFromNumber(String num) async* {
+    final response = await _provider.fetchCustomerFromNumber(num);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, Customer?>.fromHandlers(
+        handleData: (data, sink) {
+          final Map<String, dynamic> customer =
+              jsonDecode(data)['data']['original'][0];
+          sink.add(Customer.parseJsonToCustomer(customer));
+        },
+      ),
+    );
+  }
+
+  Future<Customer> postCustomer(
+    Customer newCustomer,
+  ) async {
+    final HttpClientResponse response = await _provider.postCustomer(
+      newCustomer,
+    );
+    final Map<String, dynamic> customerMap =
+        jsonDecode(await response.transform(utf8.decoder).join());
+    return Customer.parseJsonToCustomer(customerMap['data']['original']);
   }
 
   Stream<Worker?> fetchWorker(String? id) async* {
