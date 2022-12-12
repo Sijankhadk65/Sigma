@@ -11,12 +11,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  LoginBloc? _loginBloc;
+  final _loginBloc = LoginBloc.instance;
+  bool _isPasswordVisible = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loginBloc = LoginBloc.instance;
+  void togglePassword() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
   }
 
   @override
@@ -25,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: LayoutBuilder(builder: (context, constraints) {
           return StreamBuilder<User?>(
-            stream: _loginBloc!.currentUser,
+            stream: _loginBloc.currentUser,
             builder: (context, snapshot) {
               return Container(
                 width: constraints.maxWidth * 0.3,
@@ -44,39 +45,58 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: "Username",
                             hintStyle: GoogleFonts.nunito(),
                           ),
-                          onChanged: ((value) {
-                            _loginBloc!.changeUserName(value);
-                          }),
-                        ),
-                        TextField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Password",
-                            hintStyle: GoogleFonts.nunito(),
-                          ),
                           onChanged: (value) {
-                            _loginBloc!.changePassword(value);
+                            _loginBloc.changeUserName(value);
                           },
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                obscureText: _isPasswordVisible,
+                                decoration: InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: GoogleFonts.nunito(),
+                                ),
+                                onChanged: (value) {
+                                  _loginBloc.changePassword(value);
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.remove_red_eye_outlined,
+                              ),
+                            )
+                          ],
                         ),
                         SizedBox.fromSize(
                           size: const Size.fromHeight(
                             10,
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            _loginBloc!.login();
+                        StreamBuilder<bool>(
+                          stream: _loginBloc.isLogginIn,
+                          builder: (context, loginSnapshot) {
+                            return loginSnapshot.data == false
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      // _loginBloc.changeisLogginIn(true);
+                                      _loginBloc.login();
+                                    },
+                                    child: Text(
+                                      "Login",
+                                      style: GoogleFonts.nunito(),
+                                    ),
+                                  )
+                                : const CircularProgressIndicator();
                           },
-                          child: Text(
-                            "Login",
-                            style: GoogleFonts.nunito(),
-                          ),
                         ),
-                        snapshot.hasError
-                            ? Text(
-                                "${snapshot.error}",
-                              )
-                            : Container(),
                       ],
                     ),
                   ),

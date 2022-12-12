@@ -17,7 +17,7 @@ class HttpProvider {
 
   HttpProvider._(this._client);
 
-  final hostName = "https://api.microchipexpert.com.np";
+  final hostName = "http://localhost:8000";
 
   static final instance = HttpProvider._(HttpClient());
 
