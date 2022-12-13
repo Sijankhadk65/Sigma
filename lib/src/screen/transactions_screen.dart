@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sigma_app/src/bloc/transactions_bloc.dart';
 import 'package:sigma_app/src/models/transaction.dart';
 import 'package:sigma_app/src/screen/add_transaction_screen.dart';
+import 'package:sigma_app/src/widgets/paginator.dart';
 import 'package:web_date_picker/web_date_picker.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -200,67 +201,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                     ),
                                   ),
                                   const Spacer(),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.lightBlue,
-                                      borderRadius: BorderRadius.circular(
-                                        5,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.lightBlueAccent,
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(
-                                                5,
-                                              ),
-                                              bottomLeft: Radius.circular(
-                                                5,
-                                              ),
-                                            ),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Icons.arrow_back_ios_rounded,
-                                              size: 15,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            "Page 1",
-                                            style: GoogleFonts.nunito(
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.lightBlueAccent,
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(
-                                                5,
-                                              ),
-                                              bottomRight: Radius.circular(
-                                                5,
-                                              ),
-                                            ),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Icons.arrow_forward_ios_rounded,
-                                              size: 15,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  const Paginator(),
                                 ],
                               ),
                               SizedBox.fromSize(

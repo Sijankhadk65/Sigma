@@ -6,6 +6,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:sigma_app/src/models/customer.dart';
 import 'package:sigma_app/src/models/expense.dart';
 import 'package:sigma_app/src/models/issue.dart';
+import 'package:sigma_app/src/models/page.dart';
 import 'package:sigma_app/src/models/sales.dart';
 import 'package:sigma_app/src/models/sales_item.dart';
 import 'package:sigma_app/src/models/stock_item.dart';
@@ -18,19 +19,16 @@ import 'package:sigma_app/src/server/http_provider.dart';
 class Repository {
   final HttpProvider _provider = HttpProvider.instance;
 
-  Stream<List<Ticket?>> fetchTickets() async* {
+  Stream<Page<Ticket>> fetchTickets() async* {
     final response = await _provider.fetchTickets();
     yield* utf8.decoder
         .bind(response)
-        .transform(StreamTransformer<String, List<Ticket?>>.fromHandlers(
+        .transform(StreamTransformer<String, Page<Ticket>>.fromHandlers(
       handleData: (data, sink) {
-        final List<dynamic> tickets = jsonDecode(data)['data']['original'];
-        // print(tickets[0]['id']);
-        List<Ticket?> sinkData = [];
-        for (var ticket in tickets) {
-          sinkData.add(Ticket.parseToTicket(ticket));
-        }
-        sink.add(sinkData);
+        final Map<String, dynamic> pageMap =
+            jsonDecode(data)['data']['original'];
+        final page = Page.parseJsonToPage(pageMap);
+        sink.add(page);
       },
     ));
   }

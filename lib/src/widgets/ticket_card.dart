@@ -227,17 +227,6 @@ class TicketCard extends StatelessWidget {
                 child: const Text("close"),
               ),
             ),
-            Expanded(
-              flex: 3,
-              child: ElevatedButton(
-                onPressed: ticket!.is_payment_due == 0
-                    ? () {
-                        _ticketBloc!.createTicketTransaction(ticket!);
-                      }
-                    : null,
-                child: const Text("Bill"),
-              ),
-            ),
           ],
         ),
         const Divider(),
