@@ -120,19 +120,25 @@ class TicketBloc {
   Stream<Worker> get currentWorker => _currentWorkerSubject.stream;
   Function(Worker) get changeCurrentWorker => _currentWorkerSubject.sink.add;
 
+  //Parked Tickets for payment and bill printing
+
+  final BehaviorSubject<List<Ticket>> _parkedTicketsSubject =
+      BehaviorSubject<List<Ticket>>();
+  Stream<List<Ticket>> get parkedTickets => _parkedTicketsSubject.stream;
+  Function(List<Ticket>) get changeParkedTickets =>
+      _parkedTicketsSubject.sink.add;
+
+  List<Ticket> _parkedTickets = [];
+
   List<Issue> newIssues = [];
   String? _customerID;
 
   TicketBloc() {
     changeIsSaving(false);
-    // changeCustomerName("");
-    // changeCustomerPhone("");
-    // changeCustomerAddress("");
     changeOpenedDate(DateTime.now());
     changeDeliveryDate(DateTime.now());
     changeDeliveryAddress("");
     changeIssueDescription("");
-    // changeTotalCost("");
     changeTicketIssues([]);
   }
 
@@ -141,6 +147,16 @@ class TicketBloc {
     _ticketSubject.close();
     _isSavingSubject.close();
     _customerNameSubject.close();
+  }
+
+  void parkTicket(Ticket ticket) {
+    _parkedTickets.add(ticket);
+    changeParkedTickets(_parkedTickets);
+  }
+
+  void unparkTicket(Ticket ticket) {
+    _parkedTickets.remove(ticket);
+    changeParkedTickets(_parkedTickets);
   }
 
   void getTickets() {
