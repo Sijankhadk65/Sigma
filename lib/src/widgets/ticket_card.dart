@@ -13,13 +13,11 @@ class TicketCard extends StatefulWidget {
   const TicketCard({
     Key? key,
     required this.ticket,
-    required this.sn,
     required this.ticketBloc,
   }) : super(key: key);
 
   final Ticket? ticket;
   final TicketBloc? ticketBloc;
-  final int sn;
 
   @override
   State<TicketCard> createState() => _TicketCardState();
@@ -96,7 +94,7 @@ class _TicketCardState extends State<TicketCard>
               Expanded(
                 flex: 1,
                 child: Text(
-                  "${widget.sn}",
+                  "${widget.ticket!.id}",
                   textAlign: TextAlign.center,
                 ),
               ),

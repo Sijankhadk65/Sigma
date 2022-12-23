@@ -283,7 +283,7 @@ class _TicketScreenState extends State<TicketScreen> {
                                       10,
                                     ),
                                     child: Text(
-                                      "S.N.",
+                                      "ID",
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.nunito(
                                         fontSize: 18,
@@ -419,7 +419,6 @@ class _TicketScreenState extends State<TicketScreen> {
                                                 create: (context) =>
                                                     TicketBloc(),
                                                 child: TicketCard(
-                                                  sn: index + 1,
                                                   ticket: ticket,
                                                   ticketBloc: _ticketBloc,
                                                 ),
