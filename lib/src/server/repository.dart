@@ -19,7 +19,9 @@ class Repository {
   final HttpProvider _provider = HttpProvider.instance;
 
   Stream<List<Ticket?>> fetchTickets() async* {
-    final response = await _provider.fetchTickets();
+    final response = await _provider.fetchTickets(
+      [],
+    );
     yield* utf8.decoder
         .bind(response)
         .transform(StreamTransformer<String, List<Ticket?>>.fromHandlers(
@@ -42,7 +44,7 @@ class Repository {
         .transform(StreamTransformer<String, Ticket?>.fromHandlers(
       handleData: (data, sink) {
         final Map<String, dynamic> ticket =
-            jsonDecode(data)['data']['original'][0];
+            jsonDecode(data)['data']['original'];
         sink.add(Ticket.parseToTicket(ticket));
       },
     ));
@@ -159,6 +161,22 @@ class Repository {
         sink.add(response);
       },
     ));
+  }
+
+  Stream<List<Customer>> fetchCustomers(String? name) async* {
+    final response = await _provider.fetchCustomers(name);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, List<Customer>>.fromHandlers(
+        handleData: (data, sink) {
+          final List<dynamic> customers = jsonDecode(data)['data']['original'];
+          final List<Customer> _parsedList = [];
+          customers.forEach((customer) {
+            _parsedList.add(Customer.parseJsonToCustomer(customer));
+          });
+          sink.add(_parsedList);
+        },
+      ),
+    );
   }
 
   Stream<Customer?> fetchCustomer(String? id) async* {

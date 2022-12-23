@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/customer_bloc.dart';
+import 'package:sigma_app/src/bloc/customer_select_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
+import 'package:sigma_app/src/widgets/customer_list.dart';
 import 'package:sigma_app/src/widgets/input_field.dart';
 
 class TicketInputForm extends StatefulWidget {
@@ -162,10 +166,23 @@ class _TicketInputFormState extends State<TicketInputForm> {
                               ),
                             ),
                             onPressed: () {
-                              widget._ticketBloc!.getCustomerFromContact([
-                                widget.controllers[3],
-                                widget.controllers[4],
-                              ]);
+                              showDialog(
+                                context: context,
+                                builder: (context) => Provider(
+                                  child: CustomerList(
+                                    ticketBloc: widget._ticketBloc!,
+                                    controllers: [
+                                      widget.controllers[2],
+                                      widget.controllers[3],
+                                      widget.controllers[4],
+                                    ],
+                                  ),
+                                  create: (context) => CustomerSelectBloc(),
+                                ),
+                              );
+                              // widget._ticketBloc!.getCustomerFromContact([
+
+                              // ]);
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

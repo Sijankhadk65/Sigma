@@ -42,11 +42,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
     _ticketBloc!.getTicketIssues(widget.ticketID!);
     _ticketBloc!.getTicketExpenses(widget.ticketID!);
     _inventoryBloc!.getStockItems();
-    if (widget.workerID != null) {
-      _ticketBloc!.getTicketWorker(widget.workerID!);
-    } else {
-      _workerBloc!.getWorkers();
-    }
+    _workerBloc!.getWorkers();
     return Scaffold(
       appBar: AppBar(),
       body: Center(
@@ -119,9 +115,64 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                         }
                       },
                     ),
+                    StreamBuilder<List<Worker?>>(
+                      stream: _workerBloc!.workers,
+                      builder: ((context, workersSnapshot) {
+                        if (workersSnapshot.hasError) {
+                          return Text("${workersSnapshot.error}");
+                        }
+                        switch (workersSnapshot.connectionState) {
+                          case ConnectionState.none:
+                            return const Text("Awaiting Bids....");
+                          case ConnectionState.waiting:
+                            return const Text("Waiting....");
+                          case ConnectionState.active:
+                            _ticketBloc!
+                                .changeTicketWorker(workersSnapshot.data![0]!);
+                            return Row(
+                              children: [
+                                StreamBuilder<Worker?>(
+                                    stream: _ticketBloc!.ticketWorker,
+                                    builder: (context, snapshot) {
+                                      return DropdownButton<Worker>(
+                                        value: snapshot.data,
+                                        items: workersSnapshot.data!
+                                            .map<DropdownMenuItem<Worker>>(
+                                              (e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(
+                                                  e!.name,
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (value) {
+                                          _ticketBloc!
+                                              .changeTicketWorker(value!);
+                                        },
+                                      );
+                                    }),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _ticketBloc!.updateTicketWorker(
+                                      widget.ticketID,
+                                    );
+                                  },
+                                  child: const Text(
+                                    "Assign Worker",
+                                  ),
+                                ),
+                              ],
+                            );
+                          case ConnectionState.done:
+                            return Text("${workersSnapshot.data}");
+                        }
+                      }),
+                    ),
                     snapshot.data!.serviced_by != null
                         ? StreamBuilder<Worker?>(
-                            stream: _ticketBloc!.ticketWorker,
+                            stream:
+                                _ticketBloc!.getTicketWorker(widget.workerID!),
                             builder: (context, ticketWorkerSnapshot) {
                               if (ticketWorkerSnapshot.hasError) {
                                 return Text("${ticketWorkerSnapshot.error}");

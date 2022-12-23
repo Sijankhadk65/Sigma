@@ -21,10 +21,13 @@ class HttpProvider {
 
   static final instance = HttpProvider._(HttpClient());
 
-  Future<HttpClientResponse> fetchTickets() async {
+  Future<HttpClientResponse> fetchTickets(
+    List<String> filters,
+  ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$hostName/ticket"),
+      Uri.parse("$hostName/ticket/filter"),
     );
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }
@@ -35,6 +38,7 @@ class HttpProvider {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$hostName/ticket/$id"),
     );
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }
@@ -155,6 +159,16 @@ class HttpProvider {
   Future deleteTicket(String ticketID) async {
     HttpClientRequest _request = await _client.deleteUrl(
       Uri.parse("$hostName/ticket/delete/$ticketID"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchCustomers(String? name) async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse(
+        name == null ? "$hostName/customer" : "$hostName/customer/search/$name",
+      ),
     );
     HttpClientResponse _response = await _request.close();
     return _response;

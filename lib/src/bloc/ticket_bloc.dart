@@ -129,6 +129,7 @@ class TicketBloc {
       _parkedTicketsSubject.sink.add;
 
   List<Ticket> _parkedTickets = [];
+  List<Ticket> get parkedTicketsList => _parkedTickets;
 
   List<Issue> newIssues = [];
   String? _customerID;
@@ -177,16 +178,18 @@ class TicketBloc {
     });
   }
 
+  Stream<List<Issue?>> getTicketIssuesFunc(String ticketID) {
+    return _repo.fetchIssues(ticketID);
+  }
+
   void getTicketExpenses(String ticketID) {
     _repo.fetchExpenses(ticketID).listen((expenses) {
       changeTicketExpenses(expenses);
     });
   }
 
-  void getTicketWorker(String id) {
-    _repo.fetchWorker(id).listen((worker) {
-      changeTicketWorker(worker);
-    });
+  Stream<Worker?> getTicketWorker(String id) {
+    return _repo.fetchWorker(id);
   }
 
   void addExpenseToTicket(String ticketID) {
@@ -271,33 +274,42 @@ class TicketBloc {
     getTickets();
   }
 
-  void updateTicketOpenStatus(String? ticketID) {
+  void updateTicketOpenStatus() {
     final userID = LoginBloc.instance.loggedUser!.id;
-    _updateTicket(
-      {
-        "param": {
-          "is_closed": 1,
-          "closed_by": userID,
-          "closed_at": DateTime.now().toString(),
-        }
+    _parkedTickets.forEach(
+      (ticket) {
+        _updateTicket(
+          {
+            "param": {
+              "is_closed": 1,
+              "closed_by": userID,
+              "closed_at": DateTime.now().toString(),
+            }
+          },
+          ticket.id,
+        );
       },
-      ticketID,
     );
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
     getTickets();
   }
 
-  void updateTicketPaidStatus(String? ticketID) {
+  void updateTicketPaidStatus() {
     final userID = LoginBloc.instance.loggedUser!.id;
-
-    _updateTicket(
-      {
-        "param": {
-          "is_payment_due": 0,
-          "pay_recieved_by": userID,
-        }
-      },
-      ticketID,
-    );
+    _parkedTickets.forEach((ticket) {
+      _updateTicket(
+        {
+          "param": {
+            "is_payment_due": 0,
+            "pay_recieved_by": userID,
+          }
+        },
+        ticket.id,
+      );
+    });
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
     getTickets();
   }
 
@@ -307,21 +319,25 @@ class TicketBloc {
     });
   }
 
-  void createTicketTransaction(Ticket ticket) {
+  void createTicketTransaction() {
     final userID = LoginBloc.instance.loggedUser!.id;
-    final ticketTransaction = Transaction(
-      (t) => t
-        ..amount = ticket.total_service_cost!.toDouble()
-        ..center_id = "01"
-        ..created_at = DateTime.now().toString()
-        ..created_by = userID
-        ..description = ticket.id
-        ..source = "service"
-        ..type = "credit"
-        ..transaction_at = DateTime.now().toString()
-        ..payment_method = "cash",
-    );
-    _repo.postTransaction(ticketTransaction).listen((event) {});
+    _parkedTickets.forEach((ticket) {
+      final ticketTransaction = Transaction(
+        (t) => t
+          ..amount = 100000
+          ..center_id = "01"
+          ..created_at = DateTime.now().toString()
+          ..created_by = userID
+          ..description = ticket.id
+          ..source = "service"
+          ..type = "credit"
+          ..transaction_at = DateTime.now().toString()
+          ..payment_method = "cash",
+      );
+      _repo.postTransaction(ticketTransaction).listen((event) {});
+    });
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
   }
 
   void saveTicket() async {
@@ -423,5 +439,9 @@ class TicketBloc {
         _customerID = customer.id;
       },
     );
+  }
+
+  void setCustomerID(String id) {
+    _customerID = id;
   }
 }
