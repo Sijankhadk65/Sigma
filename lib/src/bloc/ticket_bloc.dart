@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sigma_app/src/bloc/login_bloc.dart';
 import 'package:sigma_app/src/models/customer.dart';
@@ -88,6 +91,11 @@ class TicketBloc {
   Function(List<Issue?>) get changeTicketIssues =>
       _ticketIssuesSubject.sink.add;
 
+  final BehaviorSubject<String> _postIssueDescSubject =
+      BehaviorSubject<String>();
+  Stream<String> get postIssueDesc => _postIssueDescSubject.stream;
+  Function(String) get changepostIssueDesc => _postIssueDescSubject.sink.add;
+
   //Expense
   final BehaviorSubject<List<Expense?>> _ticketExpensesSubject =
       BehaviorSubject<List<Expense?>>();
@@ -117,18 +125,26 @@ class TicketBloc {
   Stream<Worker> get currentWorker => _currentWorkerSubject.stream;
   Function(Worker) get changeCurrentWorker => _currentWorkerSubject.sink.add;
 
+  //Parked Tickets for payment and bill printing
+
+  final BehaviorSubject<List<Ticket>> _parkedTicketsSubject =
+      BehaviorSubject<List<Ticket>>();
+  Stream<List<Ticket>> get parkedTickets => _parkedTicketsSubject.stream;
+  Function(List<Ticket>) get changeParkedTickets =>
+      _parkedTicketsSubject.sink.add;
+
+  List<Ticket> _parkedTickets = [];
+  List<Ticket> get parkedTicketsList => _parkedTickets;
+
   List<Issue> newIssues = [];
+  String? _customerID;
 
   TicketBloc() {
     changeIsSaving(false);
-    // changeCustomerName("");
-    // changeCustomerPhone("");
-    // changeCustomerAddress("");
     changeOpenedDate(DateTime.now());
     changeDeliveryDate(DateTime.now());
     changeDeliveryAddress("");
     changeIssueDescription("");
-    // changeTotalCost("");
     changeTicketIssues([]);
   }
 
@@ -137,6 +153,16 @@ class TicketBloc {
     _ticketSubject.close();
     _isSavingSubject.close();
     _customerNameSubject.close();
+  }
+
+  void parkTicket(Ticket ticket) {
+    _parkedTickets.add(ticket);
+    changeParkedTickets(_parkedTickets);
+  }
+
+  void unparkTicket(Ticket ticket) {
+    _parkedTickets.remove(ticket);
+    changeParkedTickets(_parkedTickets);
   }
 
   void getTickets() {
@@ -157,16 +183,18 @@ class TicketBloc {
     });
   }
 
+  Stream<List<Issue?>> getTicketIssuesFunc(String ticketID) {
+    return _repo.fetchIssues(ticketID);
+  }
+
   void getTicketExpenses(String ticketID) {
     _repo.fetchExpenses(ticketID).listen((expenses) {
       changeTicketExpenses(expenses);
     });
   }
 
-  void getTicketWorker(String id) {
-    _repo.fetchWorker(id).listen((worker) {
-      changeTicketWorker(worker);
-    });
+  Stream<Worker?> getTicketWorker(String id) {
+    return _repo.fetchWorker(id);
   }
 
   void addExpenseToTicket(String ticketID) {
@@ -251,33 +279,42 @@ class TicketBloc {
     getTickets();
   }
 
-  void updateTicketOpenStatus(String? ticketID) {
+  void updateTicketOpenStatus() {
     final userID = LoginBloc.instance.loggedUser!.id;
-    _updateTicket(
-      {
-        "param": {
-          "is_closed": 1,
-          "closed_by": userID,
-          "closed_at": DateTime.now().toString(),
-        }
+    _parkedTickets.forEach(
+      (ticket) {
+        _updateTicket(
+          {
+            "param": {
+              "is_closed": 1,
+              "closed_by": userID,
+              "closed_at": DateTime.now().toString(),
+            }
+          },
+          ticket.id,
+        );
       },
-      ticketID,
     );
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
     getTickets();
   }
 
-  void updateTicketPaidStatus(String? ticketID) {
+  void updateTicketPaidStatus() {
     final userID = LoginBloc.instance.loggedUser!.id;
-
-    _updateTicket(
-      {
-        "param": {
-          "is_payment_due": 0,
-          "pay_recieved_by": userID,
-        }
-      },
-      ticketID,
-    );
+    _parkedTickets.forEach((ticket) {
+      _updateTicket(
+        {
+          "param": {
+            "is_payment_due": 0,
+            "pay_recieved_by": userID,
+          }
+        },
+        ticket.id,
+      );
+    });
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
     getTickets();
   }
 
@@ -287,31 +324,40 @@ class TicketBloc {
     });
   }
 
-  void createTicketTransaction(Ticket ticket) {
+  void createTicketTransaction() {
     final userID = LoginBloc.instance.loggedUser!.id;
-    final ticketTransaction = Transaction(
-      (t) => t
-        ..amount = ticket.total_service_cost!.toDouble()
-        ..center_id = "01"
-        ..created_at = DateTime.now().toString()
-        ..created_by = userID
-        ..description = ticket.id
-        ..source = "service"
-        ..type = "credit"
-        ..transaction_at = DateTime.now().toString()
-        ..payment_method = "cash",
-    );
-    _repo.postTransaction(ticketTransaction).listen((event) {});
+    _parkedTickets.forEach((ticket) {
+      final ticketTransaction = Transaction(
+        (t) => t
+          ..amount = 100000
+          ..center_id = "01"
+          ..created_at = DateTime.now().toString()
+          ..created_by = userID
+          ..description = ticket.id
+          ..source = "service"
+          ..type = "credit"
+          ..transaction_at = DateTime.now().toString()
+          ..payment_method = "cash",
+      );
+      _repo.postTransaction(ticketTransaction).listen((event) {});
+    });
+    _parkedTickets = [];
+    changeParkedTickets(_parkedTickets);
   }
 
-  void saveTicket() {
+  void saveTicket() async {
     changeIsSaving(true);
-    final newCustomer = Customer(
-      (c) => c
-        ..name = _customerNameSubject.value
-        ..address = _customerAddressSubject.value
-        ..ph_number = int.parse(_customerPhoneSubject.value!),
-    );
+    if (_customerID == null) {
+      final newCustomer = Customer(
+        (c) => c
+          ..name = _customerNameSubject.value
+          ..address = _customerAddressSubject.value
+          ..ph_number = int.parse(_customerPhoneSubject.value!),
+      );
+
+      final customer = await _repo.postCustomer(newCustomer);
+      _customerID = customer.id;
+    }
 
     final userID = LoginBloc.instance.loggedUser!.id;
 
@@ -320,7 +366,7 @@ class TicketBloc {
         ..center_id = "01"
         ..closed_at = null
         ..closed_by = null
-        ..customer_id = null
+        ..customer_id = _customerID
         ..pay_recieved_by = null
         ..paid_at = null
         ..closed_issue = 0
@@ -335,7 +381,12 @@ class TicketBloc {
         ..device_model = _deviceModelSubject.value
         ..total_service_cost = null,
     );
-    _repo.postTicket(newTicket, newIssues, newCustomer).listen(
+    _repo
+        .postTicket(
+      newTicket,
+      newIssues,
+    )
+        .listen(
       (ticket) {
         if (ticket != null) {
           print("Ticket Posted");
@@ -373,6 +424,24 @@ class TicketBloc {
     changeTicketIssues(newIssues);
   }
 
+  void postNewIssue(String ticketID) {
+    final newIssue = Issue(
+      (i) => i
+        ..created_at = DateTime.now().toString()
+        ..description = _postIssueDescSubject.value
+        ..is_closed = 0
+        ..ticket_id = ticketID,
+    );
+    _repo.postIssue(newIssue).listen((event) {});
+    getTicketIssues(ticketID);
+  }
+
+  void deleteIssue(String issueID, String ticketID) {
+    _repo.deleteIssue(issueID).listen((event) {
+      getTicketIssues(ticketID);
+    });
+  }
+
   void removeIssue(int index) {
     final currentIssues = _ticketIssuesSubject.value;
     currentIssues.removeAt(index);
@@ -381,5 +450,21 @@ class TicketBloc {
 
   Stream<Customer?> getTicketCustomer(String id) {
     return _repo.fetchCustomer(id);
+  }
+
+  getCustomerFromContact(List<TextEditingController> controllers) {
+    _repo.fetchCustomerFromNumber(_customerPhoneSubject.value!).listen(
+      (customer) {
+        changeCustomerName(customer!.name);
+        controllers[0].text = customer.name;
+        changeCustomerAddress(customer.address);
+        controllers[1].text = customer.address;
+        _customerID = customer.id;
+      },
+    );
+  }
+
+  void setCustomerID(String id) {
+    _customerID = id;
   }
 }

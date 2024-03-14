@@ -21,10 +21,13 @@ class HttpProvider {
 
   static final instance = HttpProvider._(HttpClient());
 
-  Future<HttpClientResponse> fetchTickets() async {
+  Future<HttpClientResponse> fetchTickets(
+    List<String> filters,
+  ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$hostName/ticket"),
+      Uri.parse("$hostName/ticket/filter"),
     );
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }
@@ -35,6 +38,7 @@ class HttpProvider {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$hostName/ticket/$id"),
     );
+
     HttpClientResponse _response = await _request.close();
     return _response;
   }
@@ -44,6 +48,32 @@ class HttpProvider {
   ) async {
     HttpClientRequest _request = await _client.getUrl(
       Uri.parse("$hostName/issue/$ticketID"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postIssue(Issue issue) async {
+    final Map<String, dynamic> body = {
+      "param": {
+        "issue": Issue.parseToJson(issue),
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$hostName/issue/create"),
+    );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future deleteIssue(String issueID) async {
+    HttpClientRequest _request = await _client.deleteUrl(
+      Uri.parse("$hostName/issue/delete/$issueID"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;
@@ -89,22 +119,42 @@ class HttpProvider {
   Future<HttpClientResponse> postTicket(
     Ticket? ticket,
     List<Issue?> issues,
-    Customer customer,
   ) async {
     final _ticket = Ticket.parseToJson(ticket);
     final _issues = issues.map((issue) => Issue.parseToJson(issue)).toList();
-    final _customer = Customer.parseCustomerToJson(customer);
 
     Map<String, dynamic> body = {
       "param": {
         "ticket": _ticket,
         "issues": _issues,
-        "customer": _customer,
       }
     };
 
     HttpClientRequest _request = await _client.postUrl(
       Uri.parse("$hostName/ticket/create"),
+    );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> postCustomer(
+    Customer customer,
+  ) async {
+    final _customer = Customer.parseCustomerToJson(customer);
+
+    Map<String, dynamic> body = {
+      "param": {
+        "customer": _customer,
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$hostName/customer/create"),
     );
 
     _request.headers.contentType =
@@ -140,11 +190,31 @@ class HttpProvider {
     return _response;
   }
 
+  Future<HttpClientResponse> fetchCustomers(String? name) async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse(
+        name == null ? "$hostName/customer" : "$hostName/customer/search/$name",
+      ),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
   Future<HttpClientResponse> fetchCustomer(
     String? id,
   ) async {
     HttpClientRequest _request = await _client.getUrl(
-      Uri.parse("$hostName/customer/$id"),
+      Uri.parse("$hostName/customer/id/$id"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future<HttpClientResponse> fetchCustomerFromNumber(
+    String num,
+  ) async {
+    HttpClientRequest _request = await _client.getUrl(
+      Uri.parse("$hostName/customer/num/$num"),
     );
     HttpClientResponse _response = await _request.close();
     return _response;

@@ -19,7 +19,9 @@ class Repository {
   final HttpProvider _provider = HttpProvider.instance;
 
   Stream<List<Ticket?>> fetchTickets() async* {
-    final response = await _provider.fetchTickets();
+    final response = await _provider.fetchTickets(
+      [],
+    );
     yield* utf8.decoder
         .bind(response)
         .transform(StreamTransformer<String, List<Ticket?>>.fromHandlers(
@@ -42,7 +44,7 @@ class Repository {
         .transform(StreamTransformer<String, Ticket?>.fromHandlers(
       handleData: (data, sink) {
         final Map<String, dynamic> ticket =
-            jsonDecode(data)['data']['original'][0];
+            jsonDecode(data)['data']['original'];
         sink.add(Ticket.parseToTicket(ticket));
       },
     ));
@@ -64,6 +66,33 @@ class Repository {
         },
       ),
     );
+  }
+
+  Stream<Issue> postIssue(Issue issue) async* {
+    final response = await _provider.postIssue(issue);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, Issue>.fromHandlers(
+        handleData: (data, sink) {
+          final Map<String, dynamic> issue =
+              jsonDecode(data)['data']['original'];
+          sink.add(Issue.parseToIssue(issue)!);
+        },
+      ),
+    );
+  }
+
+  Stream<Map<String, dynamic>> deleteIssue(String issueID) async* {
+    final response = await _provider.deleteIssue(
+      issueID,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, Map<String, dynamic>>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> response = jsonDecode(data);
+        sink.add(response);
+      },
+    ));
   }
 
   Stream<List<Expense?>> fetchExpenses(String? ticketID) async* {
@@ -114,12 +143,10 @@ class Repository {
   Stream<Ticket?> postTicket(
     Ticket? newTicket,
     List<Issue?> newIssues,
-    Customer newCustomer,
   ) async* {
     final response = await _provider.postTicket(
       newTicket,
       newIssues,
-      newCustomer,
     );
     yield* utf8.decoder
         .bind(response)
@@ -163,6 +190,22 @@ class Repository {
     ));
   }
 
+  Stream<List<Customer>> fetchCustomers(String? name) async* {
+    final response = await _provider.fetchCustomers(name);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, List<Customer>>.fromHandlers(
+        handleData: (data, sink) {
+          final List<dynamic> customers = jsonDecode(data)['data']['original'];
+          final List<Customer> _parsedList = [];
+          customers.forEach((customer) {
+            _parsedList.add(Customer.parseJsonToCustomer(customer));
+          });
+          sink.add(_parsedList);
+        },
+      ),
+    );
+  }
+
   Stream<Customer?> fetchCustomer(String? id) async* {
     final response = await _provider.fetchCustomer(id);
     yield* utf8.decoder.bind(response).transform(
@@ -176,6 +219,30 @@ class Repository {
     );
   }
 
+  Stream<Customer?> fetchCustomerFromNumber(String num) async* {
+    final response = await _provider.fetchCustomerFromNumber(num);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, Customer?>.fromHandlers(
+        handleData: (data, sink) {
+          final Map<String, dynamic> customer =
+              jsonDecode(data)['data']['original'][0];
+          sink.add(Customer.parseJsonToCustomer(customer));
+        },
+      ),
+    );
+  }
+
+  Future<Customer> postCustomer(
+    Customer newCustomer,
+  ) async {
+    final HttpClientResponse response = await _provider.postCustomer(
+      newCustomer,
+    );
+    final Map<String, dynamic> customerMap =
+        jsonDecode(await response.transform(utf8.decoder).join());
+    return Customer.parseJsonToCustomer(customerMap['data']['original']);
+  }
+
   Stream<Worker?> fetchWorker(String? id) async* {
     final response = await _provider.fetchWorker(id);
     yield* utf8.decoder.bind(response).transform(
@@ -183,6 +250,9 @@ class Repository {
         handleData: (data, sink) {
           final Map<String, dynamic> worker =
               jsonDecode(data)['data']['original'];
+          if (worker == {}) {
+            sink.add(null);
+          }
           sink.add(Worker.parseJsonToWorker(worker));
         },
       ),

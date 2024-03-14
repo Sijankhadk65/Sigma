@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:sigma_app/src/bloc/customer_bloc.dart';
+import 'package:sigma_app/src/bloc/customer_select_bloc.dart';
 import 'package:sigma_app/src/bloc/ticket_bloc.dart';
+import 'package:sigma_app/src/widgets/customer_list.dart';
 import 'package:sigma_app/src/widgets/input_field.dart';
 
 class TicketInputForm extends StatefulWidget {
@@ -101,17 +105,112 @@ class _TicketInputFormState extends State<TicketInputForm> {
                     ),
                   ],
                 ),
-                InputField(
-                  controller: widget.controllers[2],
-                  onChanged: widget._ticketBloc!.changeCustomerName,
-                  fieldHint: "John Doe",
-                  fieldLabel: "Customer's Name",
+                Container(
+                  margin: const EdgeInsets.only(
+                    top: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          "Customer's Phone",
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              10,
+                            ),
+                            border: Border.all(
+                              color: Colors.black26,
+                              width: 2,
+                            ),
+                          ),
+                          padding: const EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: TextField(
+                            controller: widget.controllers[2],
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "98-XXX-XXXXX",
+                              hintStyle: GoogleFonts.nunito(),
+                            ),
+                            onChanged: widget._ticketBloc!.changeCustomerPhone,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Provider(
+                                  child: CustomerList(
+                                    ticketBloc: widget._ticketBloc!,
+                                    controllers: [
+                                      widget.controllers[2],
+                                      widget.controllers[3],
+                                      widget.controllers[4],
+                                    ],
+                                  ),
+                                  create: (context) => CustomerSelectBloc(),
+                                ),
+                              );
+                              // widget._ticketBloc!.getCustomerFromContact([
+
+                              // ]);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Search",
+                                  style: GoogleFonts.nunito(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.search,
+                                  size: 12,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 InputField(
                   controller: widget.controllers[3],
-                  onChanged: widget._ticketBloc!.changeCustomerPhone,
-                  fieldHint: "98-XXX-XXXXX",
-                  fieldLabel: "Customer's Number",
+                  onChanged: widget._ticketBloc!.changeCustomerName,
+                  fieldHint: "John Doe",
+                  fieldLabel: "Customer's Name",
                 ),
                 InputField(
                   controller: widget.controllers[4],

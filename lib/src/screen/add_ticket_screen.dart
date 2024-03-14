@@ -49,8 +49,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
               controllers: [
                 _deviceManufracturerController!,
                 _deviceModelController!,
-                _customerNameController!,
                 _customerPhoneController!,
+                _customerNameController!,
                 _customerAddressController!,
               ],
               ticketBloc: _ticketBloc,

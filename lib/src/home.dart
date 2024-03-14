@@ -115,21 +115,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => Provider(
-                create: (_) => TicketBloc(),
-                child: const AddTicketScreen(),
-                dispose: (context, TicketBloc bloc) => bloc.dispose(),
-              ),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
