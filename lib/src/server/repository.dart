@@ -68,6 +68,33 @@ class Repository {
     );
   }
 
+  Stream<Issue> postIssue(Issue issue) async* {
+    final response = await _provider.postIssue(issue);
+    yield* utf8.decoder.bind(response).transform(
+      StreamTransformer<String, Issue>.fromHandlers(
+        handleData: (data, sink) {
+          final Map<String, dynamic> issue =
+              jsonDecode(data)['data']['original'];
+          sink.add(Issue.parseToIssue(issue)!);
+        },
+      ),
+    );
+  }
+
+  Stream<Map<String, dynamic>> deleteIssue(String issueID) async* {
+    final response = await _provider.deleteIssue(
+      issueID,
+    );
+    yield* utf8.decoder
+        .bind(response)
+        .transform(StreamTransformer<String, Map<String, dynamic>>.fromHandlers(
+      handleData: (data, sink) {
+        final Map<String, dynamic> response = jsonDecode(data);
+        sink.add(response);
+      },
+    ));
+  }
+
   Stream<List<Expense?>> fetchExpenses(String? ticketID) async* {
     final response = await _provider.fetchExpenses(ticketID);
     yield* utf8.decoder.bind(response).transform(
@@ -223,6 +250,9 @@ class Repository {
         handleData: (data, sink) {
           final Map<String, dynamic> worker =
               jsonDecode(data)['data']['original'];
+          if (worker == {}) {
+            sink.add(null);
+          }
           sink.add(Worker.parseJsonToWorker(worker));
         },
       ),

@@ -91,6 +91,11 @@ class TicketBloc {
   Function(List<Issue?>) get changeTicketIssues =>
       _ticketIssuesSubject.sink.add;
 
+  final BehaviorSubject<String> _postIssueDescSubject =
+      BehaviorSubject<String>();
+  Stream<String> get postIssueDesc => _postIssueDescSubject.stream;
+  Function(String) get changepostIssueDesc => _postIssueDescSubject.sink.add;
+
   //Expense
   final BehaviorSubject<List<Expense?>> _ticketExpensesSubject =
       BehaviorSubject<List<Expense?>>();
@@ -417,6 +422,24 @@ class TicketBloc {
     );
     newIssues.add(newIssue);
     changeTicketIssues(newIssues);
+  }
+
+  void postNewIssue(String ticketID) {
+    final newIssue = Issue(
+      (i) => i
+        ..created_at = DateTime.now().toString()
+        ..description = _postIssueDescSubject.value
+        ..is_closed = 0
+        ..ticket_id = ticketID,
+    );
+    _repo.postIssue(newIssue).listen((event) {});
+    getTicketIssues(ticketID);
+  }
+
+  void deleteIssue(String issueID, String ticketID) {
+    _repo.deleteIssue(issueID).listen((event) {
+      getTicketIssues(ticketID);
+    });
   }
 
   void removeIssue(int index) {

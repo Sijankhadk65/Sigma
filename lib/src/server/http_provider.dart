@@ -53,6 +53,32 @@ class HttpProvider {
     return _response;
   }
 
+  Future<HttpClientResponse> postIssue(Issue issue) async {
+    final Map<String, dynamic> body = {
+      "param": {
+        "issue": Issue.parseToJson(issue),
+      }
+    };
+
+    HttpClientRequest _request = await _client.postUrl(
+      Uri.parse("$hostName/issue/create"),
+    );
+
+    _request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    _request.write(json.encode(body));
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
+  Future deleteIssue(String issueID) async {
+    HttpClientRequest _request = await _client.deleteUrl(
+      Uri.parse("$hostName/issue/delete/$issueID"),
+    );
+    HttpClientResponse _response = await _request.close();
+    return _response;
+  }
+
   Future<HttpClientResponse> fetchExpenses(
     String? ticketID,
   ) async {
